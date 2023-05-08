@@ -7,5 +7,5 @@ type Accrualer interface {
 }
 
 type GoodsCreater interface {
-	Add(ctx context.Context, product Product) error
+	Add(ctx context.Context, product Reward) error
 }

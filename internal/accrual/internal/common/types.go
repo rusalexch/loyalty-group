@@ -1,6 +1,6 @@
 package common
 
-type Product struct {
+type Reward struct {
 	ID     string     `json:"match"`
 	Reward float64    `json:"reward"`
 	Type   RewardType `json:"reward_type"`

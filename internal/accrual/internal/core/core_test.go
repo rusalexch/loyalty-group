@@ -13,7 +13,7 @@ import (
 func Test_calc(t *testing.T) {
 	type args struct {
 		price float64
-		acc   common.Product
+		acc   common.Reward
 	}
 	tests := []struct {
 		name string
@@ -24,7 +24,7 @@ func Test_calc(t *testing.T) {
 			name: "percentage accrual",
 			args: args{
 				price: 30.00,
-				acc: common.Product{
+				acc: common.Reward{
 					ID:     "test",
 					Reward: 3,
 					Type:   common.Percentage,
@@ -36,7 +36,7 @@ func Test_calc(t *testing.T) {
 			name: "fix accrual",
 			args: args{
 				price: 100.00,
-				acc: common.Product{
+				acc: common.Reward{
 					ID:     "test",
 					Reward: 13,
 					Type:   common.Fixed,
@@ -48,7 +48,7 @@ func Test_calc(t *testing.T) {
 			name: "undefined type",
 			args: args{
 				price: 100.00,
-				acc: common.Product{
+				acc: common.Reward{
 					ID:     "test",
 					Reward: 13,
 					Type:   common.RewardType(3),
@@ -68,7 +68,7 @@ func Test_calc(t *testing.T) {
 func Test_core_Calc(t *testing.T) {
 	type fields struct {
 		store storager
-		goods []common.Product
+		goods []common.Reward
 	}
 	type args struct {
 		goods []common.OrderProduct
@@ -87,7 +87,7 @@ func Test_core_Calc(t *testing.T) {
 			name: "goods calc",
 			fields: fields{
 				store: mocks.MockAccrualStoragerNew(),
-				goods: []common.Product{
+				goods: []common.Reward{
 					{
 						ID:     "Bosh",
 						Type:   common.Fixed,

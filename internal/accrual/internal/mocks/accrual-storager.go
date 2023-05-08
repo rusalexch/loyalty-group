@@ -8,17 +8,17 @@ import (
 )
 
 type MockAccrualStorager struct {
-	goods map[string]common.Product
+	goods map[string]common.Reward
 	mx    sync.Mutex
 }
 
 func MockAccrualStoragerNew() *MockAccrualStorager {
 	return &MockAccrualStorager{
-		goods: make(map[string]common.Product),
+		goods: make(map[string]common.Reward),
 	}
 }
 
-func (mas *MockAccrualStorager) Add(ctx context.Context, product common.Product) error {
+func (mas *MockAccrualStorager) Add(ctx context.Context, product common.Reward) error {
 	mas.mx.Lock()
 	defer mas.mx.Unlock()
 
@@ -27,11 +27,11 @@ func (mas *MockAccrualStorager) Add(ctx context.Context, product common.Product)
 	return nil
 }
 
-func (mas *MockAccrualStorager) Match(ctx context.Context, match []string) (map[string]common.Product, error) {
+func (mas *MockAccrualStorager) Match(ctx context.Context, match []string) (map[string]common.Reward, error) {
 	mas.mx.Lock()
 	defer mas.mx.Unlock()
 
-	res := make(map[string]common.Product)
+	res := make(map[string]common.Reward)
 	for _, key := range match {
 		if v, ok := mas.goods[key]; ok {
 			res[key] = v

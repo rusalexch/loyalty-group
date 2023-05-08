@@ -16,7 +16,7 @@ func New(store storager) *core {
 	}
 }
 
-func (c *core) Add(ctx context.Context, product common.Product) error {
+func (c *core) Add(ctx context.Context, product common.Reward) error {
 	return c.store.Add(ctx, product)
 }
 
@@ -38,7 +38,7 @@ func (c *core) Calc(ctx context.Context, goods []common.OrderProduct) (float64, 
 	return accrual, nil
 }
 
-func calc(price float64, acc common.Product) float64 {
+func calc(price float64, acc common.Reward) float64 {
 	switch acc.Type {
 	case common.Percentage:
 		return price * acc.Reward / 100
