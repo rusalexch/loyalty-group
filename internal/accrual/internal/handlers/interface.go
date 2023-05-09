@@ -1,4 +1,4 @@
-package core
+package handlers
 
 import (
 	"context"
@@ -6,8 +6,8 @@ import (
 	"github.com/rusalexch/loyalty-group/internal/accrual/internal/common"
 )
 
-type storager interface {
+type service interface {
 	Add(ctx context.Context, product common.Reward) error
-	Match(ctx context.Context, match []string) (map[string]common.Reward, error)
+	Calc(ctx context.Context, products []common.OrderProduct) (float64, error)
 	Ping(ctx context.Context) error
 }

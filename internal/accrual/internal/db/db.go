@@ -48,6 +48,13 @@ func (db *database) init(ctx context.Context) error {
 	return err
 }
 
+func (db *database) Ping(ctx context.Context) error {
+	db.mx.Lock()
+	defer db.mx.Unlock()
+
+	return db.pool.Ping(ctx)
+}
+
 func (db *database) Add(ctx context.Context, reward common.Reward) error {
 	db.mx.Lock()
 	defer db.mx.Unlock()

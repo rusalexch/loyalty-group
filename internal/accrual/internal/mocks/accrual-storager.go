@@ -18,6 +18,10 @@ func MockAccrualStoragerNew() *MockAccrualStorager {
 	}
 }
 
+func (mas *MockAccrualStorager) Ping(ctx context.Context) error {
+	return nil
+}
+
 func (mas *MockAccrualStorager) Add(ctx context.Context, product common.Reward) error {
 	mas.mx.Lock()
 	defer mas.mx.Unlock()

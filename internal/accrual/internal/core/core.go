@@ -16,6 +16,10 @@ func New(store storager) *core {
 	}
 }
 
+func (c *core) Ping(ctx context.Context) error {
+	return c.store.Ping(ctx)
+}
+
 func (c *core) Add(ctx context.Context, product common.Reward) error {
 	return c.store.Add(ctx, product)
 }
