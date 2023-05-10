@@ -1,9 +1,9 @@
 package accrual
 
 import (
-	"github.com/rusalexch/loyalty-group/internal/accrual/internal/core"
 	"github.com/rusalexch/loyalty-group/internal/accrual/internal/db"
 	"github.com/rusalexch/loyalty-group/internal/accrual/internal/handlers"
+	"github.com/rusalexch/loyalty-group/internal/accrual/internal/service"
 )
 
 type Config struct {
@@ -13,8 +13,13 @@ type Config struct {
 
 func Start(config Config) {
 	storage := db.New(config.DBURL)
-	service := core.New(storage)
-	server := handlers.New(config.Address, service)
+	srv := service.New(service.ServiceConfig{
+		Store:       storage.Store,
+		OrderRepo:   storage.OrderRepo,
+		ProductRepo: storage.ProductRepo,
+		RewardRepo:  storage.RewardRepo,
+	})
+	server := handlers.New(config.Address, srv)
 
 	server.Start()
 }

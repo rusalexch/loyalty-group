@@ -7,22 +7,22 @@ import (
 	"github.com/rusalexch/loyalty-group/internal/accrual/internal/common"
 )
 
-type MockAccrualStorager struct {
+type MockStorager struct {
 	goods map[string]common.Reward
 	mx    sync.Mutex
 }
 
-func MockAccrualStoragerNew() *MockAccrualStorager {
-	return &MockAccrualStorager{
+func MockAccrualStoragerNew() *MockStorager {
+	return &MockStorager{
 		goods: make(map[string]common.Reward),
 	}
 }
 
-func (mas *MockAccrualStorager) Ping(ctx context.Context) error {
+func (mas *MockStorager) Ping(ctx context.Context) error {
 	return nil
 }
 
-func (mas *MockAccrualStorager) Add(ctx context.Context, product common.Reward) error {
+func (mas *MockStorager) Add(ctx context.Context, product common.Reward) error {
 	mas.mx.Lock()
 	defer mas.mx.Unlock()
 
@@ -31,7 +31,7 @@ func (mas *MockAccrualStorager) Add(ctx context.Context, product common.Reward) 
 	return nil
 }
 
-func (mas *MockAccrualStorager) Match(ctx context.Context, match []string) (map[string]common.Reward, error) {
+func (mas *MockStorager) Match(ctx context.Context, match []string) (map[string]common.Reward, error) {
 	mas.mx.Lock()
 	defer mas.mx.Unlock()
 
