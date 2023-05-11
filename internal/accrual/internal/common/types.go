@@ -2,7 +2,7 @@ package common
 
 // Order начисления на заказ
 type Order struct {
-	ID      string      `json:"order"`
+	ID      int64      `json:"order"`
 	Status  OrderStatus `json:"status"`
 	Accrual *float64    `json:"accrual,omitempty"`
 }
@@ -14,7 +14,7 @@ type Reward struct {
 }
 
 type OrderGoods struct {
-	ID    string         `json:"order"`
+	ID    int64         `json:"order"`
 	Goods []OrderProduct `json:"goods"`
 }
 

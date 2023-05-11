@@ -8,7 +8,7 @@ CREATE TYPE order_status AS ENUM ('REGISTERED', 'INVALID', 'PROCESSING', 'PROCES
 // sqlCreateOrders запрос на создание таблицы заказов
 const sqlCreateOrders = `
 CREATE TABLE IF NOT EXIST orders (
-	id varchar PRIMARY KEY,
+	id bigint PRIMARY KEY,
 	status order_status DEFAULT 'REGISTERED',
 	accrual double precision DEFAULT null
 );

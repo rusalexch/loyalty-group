@@ -28,7 +28,7 @@ type service struct {
 	rewardRepo  rewardRepository
 	tick        time.Duration
 	ticker      *time.Ticker
-	calcChan    chan string
+	calcChan    chan int64
 }
 
 // New конструктор сервиса
@@ -40,7 +40,7 @@ func New(conf ServiceConfig) *service {
 		rewardRepo:  conf.RewardRepo,
 		tick:        defaultTick,
 		ticker:      time.NewTicker(defaultTick),
-		calcChan:    make(chan string, 10),
+		calcChan:    make(chan int64, 10),
 	}
 	defer s.destroy()
 
@@ -55,7 +55,7 @@ func (s *service) Ping(ctx context.Context) error {
 }
 
 // GetOrder получение данных по заказу
-func (s *service) GetOrder(ctx context.Context, orderID string) (common.Order, error) {
+func (s *service) GetOrder(ctx context.Context, orderID int64) (common.Order, error) {
 	return s.orderRepo.FindByID(ctx, orderID)
 }
 
@@ -136,7 +136,7 @@ func (s *service) findOrderToCalc() {
 }
 
 // calculate метода расчета заказов
-func (s *service) calculate(orderID string) {
+func (s *service) calculate(orderID int64) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -169,7 +169,7 @@ func (s *service) calculate(orderID string) {
 }
 
 // changeOrderStatus метод изменения статуса заказа
-func (s *service) changeOrderStatus(ctx context.Context, orderID string, status common.OrderStatus) error {
+func (s *service) changeOrderStatus(ctx context.Context, orderID int64, status common.OrderStatus) error {
 	err := s.orderRepo.UpdateStatus(ctx, orderID, common.Processing)
 	if err != nil {
 		log.Println("service > changeOrderStatus > can't change order status")

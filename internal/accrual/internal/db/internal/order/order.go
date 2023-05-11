@@ -13,7 +13,7 @@ import (
 )
 
 type order struct {
-	ID      string             `db:"id"`
+	ID      int64             `db:"id"`
 	Status  common.OrderStatus `db:"status"`
 	Accrual float64            `db:"accrual"`
 }
@@ -51,7 +51,7 @@ func (repo *orderRepository) init() (err error) {
 }
 
 // Add добавление нового заказа
-func (repo *orderRepository) Add(ctx context.Context, orderID string) error {
+func (repo *orderRepository) Add(ctx context.Context, orderID int64) error {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
 
@@ -61,7 +61,7 @@ func (repo *orderRepository) Add(ctx context.Context, orderID string) error {
 }
 
 // FindByID поиск заказа по номеру
-func (repo *orderRepository) FindByID(ctx context.Context, orderID string) (common.Order, error) {
+func (repo *orderRepository) FindByID(ctx context.Context, orderID int64) (common.Order, error) {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
 
@@ -76,7 +76,7 @@ func (repo *orderRepository) FindByID(ctx context.Context, orderID string) (comm
 }
 
 // UpdateStatus изменение статуса заказа
-func (repo *orderRepository) UpdateStatus(ctx context.Context, orderID string, status common.OrderStatus) error {
+func (repo *orderRepository) UpdateStatus(ctx context.Context, orderID int64, status common.OrderStatus) error {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
 
@@ -96,7 +96,7 @@ func (repo *orderRepository) Update(ctx context.Context, order common.Order) err
 }
 
 // Delete удаление заказа
-func (repo *orderRepository) Delete(ctx context.Context, orderID string) error {
+func (repo *orderRepository) Delete(ctx context.Context, orderID int64) error {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
 
@@ -105,7 +105,7 @@ func (repo *orderRepository) Delete(ctx context.Context, orderID string) error {
 }
 
 // FindRegistered поиск новых заказов для расчета
-func (repo *orderRepository) FindRegistered(ctx context.Context) ([]string, error) {
+func (repo *orderRepository) FindRegistered(ctx context.Context) ([]int64, error) {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
 
@@ -115,9 +115,9 @@ func (repo *orderRepository) FindRegistered(ctx context.Context) ([]string, erro
 	}
 	defer rows.Close()
 
-	res := make([]string, 0)
+	res := make([]int64, 0)
 	for rows.Next() {
-		var orderID string
+		var orderID int64
 		err := rows.Scan(&orderID)
 		if err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {

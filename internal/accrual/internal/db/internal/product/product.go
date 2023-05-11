@@ -16,7 +16,7 @@ const insertStmt = "insertProduct"
 
 type product struct {
 	ID          int64   `db:"id"`
-	OrderID     string  `db:"order_id"`
+	OrderID     int64  `db:"order_id"`
 	Description string  `db:"description"`
 	Price       float64 `db:"price"`
 }
@@ -52,7 +52,7 @@ func (repo *productRepository) init() error {
 }
 
 // Add добавление новых товаров
-func (repo *productRepository) Add(ctx context.Context, orderID string, product []common.OrderProduct) error {
+func (repo *productRepository) Add(ctx context.Context, orderID int64, product []common.OrderProduct) error {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
 
@@ -79,7 +79,7 @@ func (repo *productRepository) Add(ctx context.Context, orderID string, product 
 }
 
 // FindByOrderID поиск товаров по номеру заказа
-func (repo *productRepository) FindByOrderID(ctx context.Context, orderID string) (order common.OrderGoods, err error) {
+func (repo *productRepository) FindByOrderID(ctx context.Context, orderID int64) (order common.OrderGoods, err error) {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
 
