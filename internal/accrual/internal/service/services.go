@@ -93,7 +93,7 @@ func (s *service) run() {
 	}()
 
 	go func() {
-		for _ = range s.ticker.C {
+		for range s.ticker.C {
 			s.findOrderToCalc()
 		}
 	}()
@@ -130,8 +130,8 @@ func (s *service) findOrderToCalc() {
 	}
 
 	// отправляем номера заказа в канал расчета
-	for _, orderId := range orderIDS {
-		s.calcChan <- orderId
+	for _, orderID := range orderIDS {
+		s.calcChan <- orderID
 	}
 }
 
