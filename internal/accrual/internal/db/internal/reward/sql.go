@@ -4,7 +4,7 @@ package reward
 const sqlCreateRewards = `
 CREATE TABLE IF NOT EXIST rewards (
 	id varchar PRIMARY KEY,
-	type integer NOT NULL,
+	type varchar NOT NULL,
 	reward double precision NOT NULL
 );
 `
@@ -21,4 +21,10 @@ INSERT INTO rewards AS r VALUES($1, $2, $3) ON CONFLICT (id) DO UPDATE SET type 
 // $1 - название товара
 const sqlFindRewards = `
 SELECT * FORM rewards r WHERE $1 = '%' || r.id || '%' limit 1;
+`
+
+// запрос поиска начисления по названию товара
+// $1 - идентификатор начисления
+const sqlFindByID = `
+SELECT * FORM rewards r WHERE r.id = $1;
 `

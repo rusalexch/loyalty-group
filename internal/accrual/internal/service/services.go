@@ -64,6 +64,17 @@ func (s *service) AddReward(ctx context.Context, reward common.Reward) error {
 	return s.rewardRepo.Add(ctx, reward)
 }
 
+func (s *service) IsRewardExist(ctx context.Context, rewardID string) (bool, error) {
+	reward, err := s.rewardRepo.FindByID(ctx, rewardID)
+	if err == nil && reward.ID == rewardID {
+		return true, nil
+	} else if errors.Is(err, common.ErrRewardNotFound) {
+		return false, nil
+	}
+
+	return false, err
+}
+
 // AddOrder добавление нового заказа
 func (s *service) AddOrder(ctx context.Context, order common.OrderGoods) error {
 	err := s.orderRepo.Add(ctx, order.ID)

@@ -23,6 +23,7 @@ type productRepository interface {
 type rewardRepository interface {
 	Add(ctx context.Context, reward common.Reward) error
 	Find(ctx context.Context, description string) (common.Reward, error)
+	FindByID(ctx context.Context, ID string) (common.Reward, error)
 }
 
 type storager interface {

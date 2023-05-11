@@ -9,9 +9,9 @@ const (
 	Processed  OrderStatus = "PROCESSED"
 )
 
-type RewardType int
+type RewardType string
 
 const (
-	Percentage RewardType = 1 + iota
-	Fixed
+	Percentage RewardType = "%"
+	Fixed RewardType = "pt"
 )

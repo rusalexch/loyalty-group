@@ -27,11 +27,6 @@ type productRepository interface {
 type rewardRepository interface {
 	Add(ctx context.Context, reward common.Reward) error
 	Find(ctx context.Context, description string) (common.Reward, error)
+	FindByID(ctx context.Context, ID string) (common.Reward, error)
 }
 
-type servicer interface {
-	Ping(ctx context.Context) error
-	GetOrder(ctx context.Context, orderID string) (float64, error)
-	AddReward(ctx context.Context, product common.Reward) error
-	AddOrder(ctx context.Context, order common.OrderGoods) error
-}

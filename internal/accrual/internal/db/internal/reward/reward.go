@@ -7,14 +7,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rusalexch/loyalty-group/internal/accrual/internal/common"
 )
 
 type reward struct {
 	ID     string  `db:"id"`
-	Type   int     `db:"type"`
+	Type   string  `db:"type"`
 	Reward float64 `db:"reward"`
 }
 
@@ -22,7 +22,6 @@ type rewardRepository struct {
 	pool *pgxpool.Pool
 	mx   *sync.Mutex
 }
-
 
 // New конструктор репозитория начислений
 func New(pool *pgxpool.Pool) *rewardRepository {
@@ -66,7 +65,21 @@ func (repo *rewardRepository) Find(ctx context.Context, description string) (com
 
 	var reward reward
 	row := repo.pool.QueryRow(ctx, sqlFindRewards, description)
-	err := row.Scan(reward)
+	err := row.Scan(&reward)
+	if err != nil && errors.Is(err, pgx.ErrNoRows) {
+		return common.Reward{}, common.ErrRewardNotFound
+	}
+
+	return dbToJSON(reward), err
+}
+
+func (repo *rewardRepository) FindByID(ctx context.Context, ID string) (common.Reward, error) {
+	repo.mx.Lock()
+	defer repo.mx.Unlock()
+
+	var reward reward
+	row := repo.pool.QueryRow(ctx, sqlFindByID, ID)
+	err := row.Scan(&reward)
 	if err != nil && errors.Is(err, pgx.ErrNoRows) {
 		return common.Reward{}, common.ErrRewardNotFound
 	}
