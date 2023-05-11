@@ -17,6 +17,7 @@ type database struct {
 	Store       storager
 }
 
+// New конструктор базы данных
 func New(dbURL string) *database {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -42,11 +43,14 @@ type storage struct {
 	pool *pgxpool.Pool
 }
 
+// конструктор общих методов базы данных
 func NewStore(pool *pgxpool.Pool) *storage {
 	return &storage{
 		pool: pool,
 	}
 }
+
+// Ping проверка работоспособности БД
 func (s *storage) Ping(ctx context.Context) error {
 	return s.pool.Ping(ctx)
 }

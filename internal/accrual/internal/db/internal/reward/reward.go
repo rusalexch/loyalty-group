@@ -23,6 +23,8 @@ type rewardRepository struct {
 	mx   *sync.Mutex
 }
 
+
+// New конструктор репозитория начислений
 func New(pool *pgxpool.Pool) *rewardRepository {
 	repo := &rewardRepository{
 		pool: pool,
@@ -37,6 +39,7 @@ func New(pool *pgxpool.Pool) *rewardRepository {
 	return repo
 }
 
+// init инициализация репозитория начислений
 func (repo *rewardRepository) init() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -46,6 +49,7 @@ func (repo *rewardRepository) init() error {
 	return err
 }
 
+// Add добавление нового начисления
 func (repo *rewardRepository) Add(ctx context.Context, reward common.Reward) error {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
@@ -55,6 +59,7 @@ func (repo *rewardRepository) Add(ctx context.Context, reward common.Reward) err
 	return err
 }
 
+// Find поиск начисления по наименованию товара
 func (repo *rewardRepository) Find(ctx context.Context, description string) (common.Reward, error) {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
@@ -69,6 +74,7 @@ func (repo *rewardRepository) Find(ctx context.Context, description string) (com
 	return dbToJSON(reward), err
 }
 
+// dbToJSON преобразование структуры БД в структуру JSON
 func dbToJSON(reward reward) common.Reward {
 	return common.Reward{
 		ID:     reward.ID,

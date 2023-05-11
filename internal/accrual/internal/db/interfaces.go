@@ -8,14 +8,16 @@ import (
 
 type orderRepository interface {
 	Add(ctx context.Context, orderID string) error
-	FindById(ctx context.Context, orderID string) (common.Order, error)
+	FindByID(ctx context.Context, orderID string) (common.Order, error)
 	UpdateStatus(ctx context.Context, orderID string, status common.OrderStatus) error
 	Update(ctx context.Context, order common.Order) error
+	Delete(ctx context.Context, orderID string) error
+	FindRegistered(ctx context.Context) ([]string, error)
 }
 
 type productRepository interface {
-	Add(ctx context.Context, orderID string, product common.OrderProduct) error
-	FindByOrderId(ctx context.Context, orderID string) (common.OrderGoods, error)
+	Add(ctx context.Context, orderID string, product []common.OrderProduct) error
+	FindByOrderID(ctx context.Context, orderID string) (common.OrderGoods, error)
 }
 
 type rewardRepository interface {

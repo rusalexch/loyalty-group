@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rusalexch/loyalty-group/internal/accrual/internal/common"
 )
 
@@ -23,6 +23,7 @@ type orderRepository struct {
 	mx   *sync.Mutex
 }
 
+// New конструктор репозитория заказов
 func New(pool *pgxpool.Pool) *orderRepository {
 	repo := &orderRepository{
 		pool: pool,
@@ -36,6 +37,7 @@ func New(pool *pgxpool.Pool) *orderRepository {
 	return repo
 }
 
+// init инициализация репозитория заказов
 func (repo *orderRepository) init() (err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -48,6 +50,7 @@ func (repo *orderRepository) init() (err error) {
 	return
 }
 
+// Add добавление нового заказа
 func (repo *orderRepository) Add(ctx context.Context, orderID string) error {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
@@ -57,13 +60,14 @@ func (repo *orderRepository) Add(ctx context.Context, orderID string) error {
 	return err
 }
 
-func (repo *orderRepository) FindById(ctx context.Context, orderID string) (common.Order, error) {
+// FindByID поиск заказа по номеру
+func (repo *orderRepository) FindByID(ctx context.Context, orderID string) (common.Order, error) {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
 
 	var order order
 	row := repo.pool.QueryRow(ctx, sqlFindByID)
-	err := row.Scan(order)
+	err := row.Scan(&order.ID, &order.Status, &order.Accrual)
 	if err != nil && errors.Is(err, pgx.ErrNoRows) {
 		return common.Order{}, common.ErrOrderNotFound
 	}
@@ -71,6 +75,7 @@ func (repo *orderRepository) FindById(ctx context.Context, orderID string) (comm
 	return dbToJSON(order), err
 }
 
+// UpdateStatus изменение статуса заказа
 func (repo *orderRepository) UpdateStatus(ctx context.Context, orderID string, status common.OrderStatus) error {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
@@ -80,6 +85,7 @@ func (repo *orderRepository) UpdateStatus(ctx context.Context, orderID string, s
 	return err
 }
 
+// Update изменения данных заказа
 func (repo *orderRepository) Update(ctx context.Context, order common.Order) error {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
@@ -89,6 +95,43 @@ func (repo *orderRepository) Update(ctx context.Context, order common.Order) err
 	return err
 }
 
+// Delete удаление заказа
+func (repo *orderRepository) Delete(ctx context.Context, orderID string) error {
+	repo.mx.Lock()
+	defer repo.mx.Unlock()
+
+	_, err := repo.pool.Exec(ctx, sqlDelete, orderID)
+	return err
+}
+
+// FindRegistered поиск новых заказов для расчета
+func (repo *orderRepository) FindRegistered(ctx context.Context) ([]string, error) {
+	repo.mx.Lock()
+	defer repo.mx.Unlock()
+
+	rows, err := repo.pool.Query(ctx, sqlFindRegistered)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	res := make([]string, 0)
+	for rows.Next() {
+		var orderID string
+		err := rows.Scan(&orderID)
+		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				return res, nil
+			}
+			return nil, err
+		}
+		res = append(res, orderID)
+	}
+
+	return res, nil
+}
+
+// dbToJSON преобразование структуры БД в структуру JSON
 func dbToJSON(order order) common.Order {
 	return common.Order{
 		ID:      order.ID,

@@ -5,7 +5,7 @@ const sqlCreateOrderStatus = `
 CREATE TYPE order_status AS ENUM ('REGISTERED', 'INVALID', 'PROCESSING', 'PROCESSED');
 `
 
-// запрос на создание таблицы заказов
+// sqlCreateOrders запрос на создание таблицы заказов
 const sqlCreateOrders = `
 CREATE TABLE IF NOT EXIST orders (
 	id varchar PRIMARY KEY,
@@ -14,21 +14,27 @@ CREATE TABLE IF NOT EXIST orders (
 );
 `
 
-// запрос на добавление нового заказа:
+// sqlAddNewOrder запрос на добавление нового заказа:
 // $1 - идентификатор (id) заказа
-const sqlAddNewOrder = `INSERT INTO orders VALUES($1) ON CONFLICT (id) DO NOTHING`
+const sqlAddNewOrder = `INSERT INTO orders VALUES($1) ON CONFLICT (id) DO NOTHING;`
 
-// запрос на поиск заказа:
+// sqlFindByID запрос на поиск заказа:
 // $1 - идентификатор (id) заказа
-const sqlFindByID = `SELECT * FROM orders WHERE id = $1`
+const sqlFindByID = `SELECT * FROM orders WHERE id = $1;`
 
-// запрос на обновление статуса заказа:
+// sqlUpdateStatus запрос на обновление статуса заказа:
 // $1 - идентификатор (id) заказа
 // $2 - статус (status) заказа
-const sqlUpdateStatus = `UPDATE orders SET status = $2 WHERE id = $1`
+const sqlUpdateStatus = `UPDATE orders SET status = $2 WHERE id = $1;`
 
-// запрос на обновление заказа:
+// sqlUpdate запрос на обновление заказа:
 // $1 - идентификатор (id) заказ
 // $2 - статус (status) заказа
 // $3 - начисления (accrual) заказа
-const sqlUpdate = `UPDATE orders SET status = $2, accrual = $3 WHERE id = $1`
+const sqlUpdate = `UPDATE orders SET status = $2, accrual = $3 WHERE id = $1;`
+
+// sqlDelete запрос на удаление заказа
+// $1 - номер заказа
+const sqlDelete = `DELETE FROM orders WHERE id = $1;`
+
+const sqlFindRegistered = `SELECT id FROM orders WHERE status = 'REGISTERED';`

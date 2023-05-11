@@ -2,13 +2,17 @@ package product
 
 import (
 	"context"
+	"errors"
 	"log"
 	"sync"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rusalexch/loyalty-group/internal/accrual/internal/common"
 )
+
+const insertStmt = "insertProduct"
 
 type product struct {
 	ID          int64   `db:"id"`
@@ -37,7 +41,7 @@ func New(pool *pgxpool.Pool) *productRepository {
 	return repo
 }
 
-// init создание таблицы если еще не создана
+// init инициализация репозитория товаров
 func (repo *productRepository) init() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -47,16 +51,35 @@ func (repo *productRepository) init() error {
 	return err
 }
 
-func (repo *productRepository) Add(ctx context.Context, orderID string, product common.OrderProduct) error {
+// Add добавление новых товаров
+func (repo *productRepository) Add(ctx context.Context, orderID string, product []common.OrderProduct) error {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
 
-	_, err := repo.pool.Exec(ctx, sqlAddProduct, orderID, product.Description, product.Price)
+	tx, err := repo.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
 
-	return err
+	stmt, err := tx.Prepare(ctx, insertStmt, sqlAddProduct)
+	if err != nil {
+		tx.Rollback(ctx)
+		return err
+	}
+
+	for _, p := range product {
+		_, err := repo.pool.Exec(ctx, stmt.Name, orderID, p.Description, p.Price)
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}
+
+	tx.Commit(ctx)
+	return nil
 }
 
-func (repo *productRepository) FindByOrderId(ctx context.Context, orderID string) (order common.OrderGoods, err error) {
+// FindByOrderID поиск товаров по номеру заказа
+func (repo *productRepository) FindByOrderID(ctx context.Context, orderID string) (order common.OrderGoods, err error) {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
 
@@ -66,30 +89,25 @@ func (repo *productRepository) FindByOrderId(ctx context.Context, orderID string
 	}
 	defer rows.Close()
 
-	goods := make([]product, 0, 10)
+	order.ID = orderID
+	order.Goods = make([]common.OrderProduct, 0)
 
 	for rows.Next() {
 		var product product
 		err = rows.Scan(&product.ID, &product.OrderID, &product.Description, &product.Price)
 		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				return order, nil
+			}
 			return
 		}
-		goods = append(goods, product)
+		order.Goods = append(order.Goods, dbToJSON(product))
 	}
 
-	err = rows.Err()
-	if err != nil {
-		return
-	}
-
-	order.ID = orderID
-	order.Goods = make([]common.OrderProduct, 0, len(goods))
-	for _, g := range goods {
-		order.Goods = append(order.Goods, dbToJSON(g))
-	}
 	return
 }
 
+// dbToJSON преобразование структуры БД в структуру JSON
 func dbToJSON(product product) common.OrderProduct {
 	return common.OrderProduct{
 		Description: product.Description,

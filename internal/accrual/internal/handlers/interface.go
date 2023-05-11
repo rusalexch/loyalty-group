@@ -8,7 +8,7 @@ import (
 
 type service interface {
 	Ping(ctx context.Context) error
-	GetOrder(ctx context.Context, orderID string) (float64, error)
-	AddProduct(ctx context.Context, product common.Reward) error
+	GetOrder(ctx context.Context, orderID string) (common.Order, error)
+	AddReward(ctx context.Context, product common.Reward) error
 	AddOrder(ctx context.Context, order common.OrderGoods) error
 }
