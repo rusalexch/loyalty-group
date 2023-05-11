@@ -3,6 +3,7 @@ package handlers
 import (
 	"log"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/go-chi/chi/middleware"
@@ -11,10 +12,14 @@ import (
 )
 
 type handlers struct {
-	address string
-	service service
-	timeout time.Duration
-	mux     *chi.Mux
+	address      string
+	service      service
+	timeout      time.Duration
+	mux          *chi.Mux
+	maxRequest   int
+	mx           *sync.Mutex
+	reqPerMinute map[string]int
+	ticker       *time.Ticker
 }
 
 func New(address string, service service) *handlers {
@@ -23,6 +28,7 @@ func New(address string, service service) *handlers {
 		service: service,
 		timeout: 5 * time.Second,
 		mux:     chi.NewMux(),
+		ticker:  time.NewTicker(time.Minute),
 	}
 
 	return h
@@ -35,16 +41,29 @@ func (h *handlers) Start() {
 	h.mux.Use(middleware.RequestID)
 	h.mux.Use(middleware.RealIP)
 	h.mux.Use(httplog.RequestLogger(logger))
-	h.mux.Use(middleware.Compress(5, "application/json", "text/html"))
+	h.mux.Use(middleware.Compress(5, "application/json"))
 	h.mux.Use(middleware.Recoverer)
 
 	h.mux.Get("/", h.ping)
-	h.mux.Get("/api/orders/{orderID}", h.calc)
+	h.mux.Get("/api/orders/{orderID}", h.getOrder)
 	h.mux.Post("/api/orders", h.addOrder)
-	h.mux.Post("/api/goods", h.addProduct)
+	h.mux.Post("/api/goods", h.addReward)
+
+	go func() {
+		for range h.ticker.C {
+			h.resetRequestCounter()
+		}
+	}()
 
 	err := http.ListenAndServe(h.address, h.mux)
 	if err != nil {
 		log.Panic(err)
 	}
+}
+
+func (h *handlers) resetRequestCounter() {
+	h.mx.Lock()
+	defer h.mx.Unlock()
+
+	h.reqPerMinute = make(map[string]int)
 }
