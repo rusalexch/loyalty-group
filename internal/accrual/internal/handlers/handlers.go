@@ -55,10 +55,7 @@ func (h *handlers) Start() {
 		}
 	}()
 
-	err := http.ListenAndServe(h.address, h.mux)
-	if err != nil {
-		log.Panic(err)
-	}
+	log.Println(http.ListenAndServe(h.address, h.mux))
 }
 
 func (h *handlers) resetRequestCounter() {
