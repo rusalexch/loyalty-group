@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rusalexch/loyalty-group/internal/accrual/internal/db/internal/order"
@@ -19,7 +20,7 @@ type database struct {
 
 // New конструктор базы данных
 func New(dbURL string) *database {
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	pool, err := pgxpool.New(ctx, dbURL)
