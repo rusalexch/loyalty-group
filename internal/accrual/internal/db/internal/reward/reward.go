@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"log"
-	"sync"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -20,7 +19,6 @@ type reward struct {
 
 type rewardRepository struct {
 	pool *pgxpool.Pool
-	mx   *sync.Mutex
 }
 
 // New конструктор репозитория начислений
@@ -50,9 +48,6 @@ func (repo *rewardRepository) init() error {
 
 // Add добавление нового начисления
 func (repo *rewardRepository) Add(ctx context.Context, reward app.Reward) error {
-	repo.mx.Lock()
-	defer repo.mx.Unlock()
-
 	_, err := repo.pool.Exec(ctx, sqlAddReward, reward.ID, reward.Type, reward.Reward)
 
 	return err
@@ -60,9 +55,6 @@ func (repo *rewardRepository) Add(ctx context.Context, reward app.Reward) error 
 
 // Find поиск начисления по наименованию товара
 func (repo *rewardRepository) Find(ctx context.Context, description string) (app.Reward, error) {
-	repo.mx.Lock()
-	defer repo.mx.Unlock()
-
 	var reward reward
 	row := repo.pool.QueryRow(ctx, sqlFindRewards, description)
 	err := row.Scan(&reward)
@@ -73,10 +65,8 @@ func (repo *rewardRepository) Find(ctx context.Context, description string) (app
 	return dbToJSON(reward), err
 }
 
+// FindByID поиск начисления по наименованию
 func (repo *rewardRepository) FindByID(ctx context.Context, ID string) (app.Reward, error) {
-	repo.mx.Lock()
-	defer repo.mx.Unlock()
-
 	var reward reward
 	row := repo.pool.QueryRow(ctx, sqlFindByID, ID)
 	err := row.Scan(&reward)

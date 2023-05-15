@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"log"
-	"sync"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -20,7 +19,6 @@ type order struct {
 
 type orderRepository struct {
 	pool *pgxpool.Pool
-	mx   *sync.Mutex
 }
 
 // New конструктор репозитория заказов
@@ -41,6 +39,7 @@ func New(pool *pgxpool.Pool) *orderRepository {
 func (repo *orderRepository) init() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+
 	_, err := repo.pool.Exec(ctx, sqlCreateOrderStatus)
 	if err != nil {
 		return err
@@ -52,9 +51,6 @@ func (repo *orderRepository) init() error {
 
 // Add добавление нового заказа
 func (repo *orderRepository) Add(ctx context.Context, orderID int64) error {
-	repo.mx.Lock()
-	defer repo.mx.Unlock()
-
 	_, err := repo.pool.Exec(ctx, sqlAddNewOrder, orderID)
 
 	return err
@@ -62,9 +58,6 @@ func (repo *orderRepository) Add(ctx context.Context, orderID int64) error {
 
 // FindByID поиск заказа по номеру
 func (repo *orderRepository) FindByID(ctx context.Context, orderID int64) (app.Order, error) {
-	repo.mx.Lock()
-	defer repo.mx.Unlock()
-
 	var order order
 	row := repo.pool.QueryRow(ctx, sqlFindByID)
 	err := row.Scan(&order.ID, &order.Status, &order.Accrual)
@@ -77,9 +70,6 @@ func (repo *orderRepository) FindByID(ctx context.Context, orderID int64) (app.O
 
 // UpdateStatus изменение статуса заказа
 func (repo *orderRepository) UpdateStatus(ctx context.Context, orderID int64, status string) error {
-	repo.mx.Lock()
-	defer repo.mx.Unlock()
-
 	_, err := repo.pool.Exec(ctx, sqlUpdateStatus, orderID, status)
 
 	return err
@@ -87,9 +77,6 @@ func (repo *orderRepository) UpdateStatus(ctx context.Context, orderID int64, st
 
 // Update изменения данных заказа
 func (repo *orderRepository) Update(ctx context.Context, order app.Order) error {
-	repo.mx.Lock()
-	defer repo.mx.Unlock()
-
 	_, err := repo.pool.Exec(ctx, sqlUpdate, order.ID, order.Status, order.Accrual)
 
 	return err
@@ -97,18 +84,12 @@ func (repo *orderRepository) Update(ctx context.Context, order app.Order) error 
 
 // Delete удаление заказа
 func (repo *orderRepository) Delete(ctx context.Context, orderID int64) error {
-	repo.mx.Lock()
-	defer repo.mx.Unlock()
-
 	_, err := repo.pool.Exec(ctx, sqlDelete, orderID)
 	return err
 }
 
 // FindRegistered поиск новых заказов для расчета
 func (repo *orderRepository) FindRegistered(ctx context.Context) ([]int64, error) {
-	repo.mx.Lock()
-	defer repo.mx.Unlock()
-
 	rows, err := repo.pool.Query(ctx, sqlFindRegistered)
 	if err != nil {
 		return nil, err

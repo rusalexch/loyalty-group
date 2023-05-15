@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"log"
-	"sync"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -23,7 +22,6 @@ type product struct {
 
 type productRepository struct {
 	pool *pgxpool.Pool
-	mx   *sync.Mutex
 }
 
 // New конструктор репозитория товаров
@@ -53,9 +51,6 @@ func (repo *productRepository) init() error {
 
 // Add добавление новых товаров
 func (repo *productRepository) Add(ctx context.Context, orderID int64, product []app.OrderProduct) error {
-	repo.mx.Lock()
-	defer repo.mx.Unlock()
-
 	tx, err := repo.pool.Begin(ctx)
 	if err != nil {
 		return err
@@ -80,9 +75,6 @@ func (repo *productRepository) Add(ctx context.Context, orderID int64, product [
 
 // FindByOrderID поиск товаров по номеру заказа
 func (repo *productRepository) FindByOrderID(ctx context.Context, orderID int64) (order app.OrderGoods, err error) {
-	repo.mx.Lock()
-	defer repo.mx.Unlock()
-
 	rows, err := repo.pool.Query(ctx, sqlFindOrderProducts, orderID)
 	if err != nil {
 		return app.OrderGoods{}, err
