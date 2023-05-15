@@ -91,7 +91,7 @@ func (repo *rewardRepository) FindByID(ctx context.Context, ID string) (common.R
 func dbToJSON(reward reward) common.Reward {
 	return common.Reward{
 		ID:     reward.ID,
-		Type:   common.RewardType(reward.Type),
+		Type:   reward.Type,
 		Reward: reward.Reward,
 	}
 }

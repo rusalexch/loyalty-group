@@ -7,9 +7,7 @@ const (
 	Processed  = "PROCESSED"
 )
 
-type RewardType string
-
 const (
-	Percentage RewardType = "%"
-	Fixed RewardType = "pt"
+	Percentage = "%"
+	Fixed = "pt"
 )

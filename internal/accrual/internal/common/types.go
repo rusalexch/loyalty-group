@@ -8,9 +8,9 @@ type Order struct {
 }
 
 type Reward struct {
-	ID     string     `json:"match"`
-	Reward float64    `json:"reward"`
-	Type   RewardType `json:"reward_type"`
+	ID     string  `json:"match"`
+	Reward float64 `json:"reward"`
+	Type   string  `json:"reward_type"`
 }
 
 type OrderGoods struct {
