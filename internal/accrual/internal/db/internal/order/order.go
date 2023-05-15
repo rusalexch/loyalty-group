@@ -31,23 +31,23 @@ func New(pool *pgxpool.Pool) *orderRepository {
 	err := repo.init()
 	if err != nil {
 		log.Println("can't init order repository")
-		log.Panic(err)
+		log.Println(err)
 	}
 
 	return repo
 }
 
 // init инициализация репозитория заказов
-func (repo *orderRepository) init() (err error) {
+func (repo *orderRepository) init() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	_, err = repo.pool.Exec(ctx, sqlCreateOrderStatus)
+	_, err := repo.pool.Exec(ctx, sqlCreateOrderStatus)
 	if err != nil {
 		return err
 	}
 	_, err = repo.pool.Exec(ctx, sqlCreateOrders)
 
-	return
+	return err
 }
 
 // Add добавление нового заказа
