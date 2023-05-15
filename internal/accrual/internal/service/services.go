@@ -180,7 +180,7 @@ func (s *service) calculate(orderID int64) {
 }
 
 // changeOrderStatus метод изменения статуса заказа
-func (s *service) changeOrderStatus(ctx context.Context, orderID int64, status common.OrderStatus) error {
+func (s *service) changeOrderStatus(ctx context.Context, orderID int64, status string) error {
 	err := s.orderRepo.UpdateStatus(ctx, orderID, common.Processing)
 	if err != nil {
 		log.Println("service > changeOrderStatus > can't change order status")

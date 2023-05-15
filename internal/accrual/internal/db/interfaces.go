@@ -9,7 +9,7 @@ import (
 type orderRepository interface {
 	Add(ctx context.Context, orderID int64) error
 	FindByID(ctx context.Context, orderID int64) (common.Order, error)
-	UpdateStatus(ctx context.Context, orderID int64, status common.OrderStatus) error
+	UpdateStatus(ctx context.Context, orderID int64, status string) error
 	Update(ctx context.Context, order common.Order) error
 	Delete(ctx context.Context, orderID int64) error
 	FindRegistered(ctx context.Context) ([]int64, error)

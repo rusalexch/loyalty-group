@@ -1,12 +1,10 @@
 package common
 
-type OrderStatus string
-
 const (
-	Registered OrderStatus = "REGISTERED"
-	Invalid    OrderStatus = "INVALID"
-	Processing OrderStatus = "PROCESSING"
-	Processed  OrderStatus = "PROCESSED"
+	Registered = "REGISTERED"
+	Invalid    = "INVALID"
+	Processing = "PROCESSING"
+	Processed  = "PROCESSED"
 )
 
 type RewardType string

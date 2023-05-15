@@ -13,9 +13,9 @@ import (
 )
 
 type order struct {
-	ID      int64             `db:"id"`
-	Status  common.OrderStatus `db:"status"`
-	Accrual float64            `db:"accrual"`
+	ID      int64   `db:"id"`
+	Status  string  `db:"status"`
+	Accrual float64 `db:"accrual"`
 }
 
 type orderRepository struct {
@@ -76,7 +76,7 @@ func (repo *orderRepository) FindByID(ctx context.Context, orderID int64) (commo
 }
 
 // UpdateStatus изменение статуса заказа
-func (repo *orderRepository) UpdateStatus(ctx context.Context, orderID int64, status common.OrderStatus) error {
+func (repo *orderRepository) UpdateStatus(ctx context.Context, orderID int64, status string) error {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
 
