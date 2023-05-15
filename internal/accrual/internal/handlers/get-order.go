@@ -10,7 +10,7 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi"
-	"github.com/rusalexch/loyalty-group/internal/accrual/internal/common"
+	"github.com/rusalexch/loyalty-group/internal/accrual/internal/app"
 )
 
 func (h *handlers) getOrder(w http.ResponseWriter, r *http.Request) {
@@ -37,7 +37,7 @@ func (h *handlers) getOrder(w http.ResponseWriter, r *http.Request) {
 
 	order, err := h.service.GetOrder(ctx, ID)
 	if err != nil {
-		if errors.Is(err, common.ErrOrderNotFound) {
+		if errors.Is(err, app.ErrOrderNotFound) {
 			w.WriteHeader(http.StatusNoContent)
 			return
 		}

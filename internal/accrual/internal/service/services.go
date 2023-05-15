@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/rusalexch/loyalty-group/internal/accrual/internal/common"
+	"github.com/rusalexch/loyalty-group/internal/accrual/internal/app"
 )
 
 const (
@@ -55,12 +55,12 @@ func (s *service) Ping(ctx context.Context) error {
 }
 
 // GetOrder получение данных по заказу
-func (s *service) GetOrder(ctx context.Context, orderID int64) (common.Order, error) {
+func (s *service) GetOrder(ctx context.Context, orderID int64) (app.Order, error) {
 	return s.orderRepo.FindByID(ctx, orderID)
 }
 
 // AddReward добавление/изменение схемы начисления
-func (s *service) AddReward(ctx context.Context, reward common.Reward) error {
+func (s *service) AddReward(ctx context.Context, reward app.Reward) error {
 	return s.rewardRepo.Add(ctx, reward)
 }
 
@@ -68,7 +68,7 @@ func (s *service) IsRewardExist(ctx context.Context, rewardID string) (bool, err
 	reward, err := s.rewardRepo.FindByID(ctx, rewardID)
 	if err == nil && reward.ID == rewardID {
 		return true, nil
-	} else if errors.Is(err, common.ErrRewardNotFound) {
+	} else if errors.Is(err, app.ErrRewardNotFound) {
 		return false, nil
 	}
 
@@ -76,7 +76,7 @@ func (s *service) IsRewardExist(ctx context.Context, rewardID string) (bool, err
 }
 
 // AddOrder добавление нового заказа
-func (s *service) AddOrder(ctx context.Context, order common.OrderGoods) error {
+func (s *service) AddOrder(ctx context.Context, order app.OrderGoods) error {
 	err := s.orderRepo.Add(ctx, order.ID)
 	if err != nil {
 		return err
@@ -151,7 +151,7 @@ func (s *service) calculate(orderID int64) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	err := s.changeOrderStatus(ctx, orderID, common.Processing)
+	err := s.changeOrderStatus(ctx, orderID, app.Processing)
 	if err != nil {
 		return
 	}
@@ -159,7 +159,7 @@ func (s *service) calculate(orderID int64) {
 	if err != nil {
 		log.Println("service > calculate > can't find goods by orderID")
 		log.Println(err)
-		s.changeOrderStatus(ctx, orderID, common.Invalid)
+		s.changeOrderStatus(ctx, orderID, app.Invalid)
 		return
 	}
 
@@ -172,16 +172,16 @@ func (s *service) calculate(orderID int64) {
 		}
 	}
 
-	s.orderRepo.Update(ctx, common.Order{
+	s.orderRepo.Update(ctx, app.Order{
 		ID:      orderID,
-		Status:  common.Processed,
+		Status:  app.Processed,
 		Accrual: &accrual,
 	})
 }
 
 // changeOrderStatus метод изменения статуса заказа
 func (s *service) changeOrderStatus(ctx context.Context, orderID int64, status string) error {
-	err := s.orderRepo.UpdateStatus(ctx, orderID, common.Processing)
+	err := s.orderRepo.UpdateStatus(ctx, orderID, app.Processing)
 	if err != nil {
 		log.Println("service > changeOrderStatus > can't change order status")
 		log.Println(err)
@@ -191,11 +191,11 @@ func (s *service) changeOrderStatus(ctx context.Context, orderID int64, status s
 }
 
 // findRewards поиск схем начислений соответствующих товарам в заказе
-func (s *service) findRewards(ctx context.Context, goods []common.OrderProduct) map[string]common.Reward {
-	res := make(map[string]common.Reward)
+func (s *service) findRewards(ctx context.Context, goods []app.OrderProduct) map[string]app.Reward {
+	res := make(map[string]app.Reward)
 	for _, product := range goods {
 		reward, err := s.rewardRepo.Find(ctx, product.Description)
-		if err != nil && !errors.Is(err, common.ErrOrderNotFound) {
+		if err != nil && !errors.Is(err, app.ErrOrderNotFound) {
 			log.Println("service > findRewards > can't find reward")
 			log.Println(err)
 		} else {
@@ -207,11 +207,11 @@ func (s *service) findRewards(ctx context.Context, goods []common.OrderProduct) 
 }
 
 // calcAccrual метод расчета начисления
-func calcAccrual(price float64, acc common.Reward) float64 {
+func calcAccrual(price float64, acc app.Reward) float64 {
 	switch acc.Type {
-	case common.Percentage:
+	case app.Percentage:
 		return price * acc.Reward / 100
-	case common.Fixed:
+	case app.Fixed:
 		return acc.Reward
 	default:
 		return 0

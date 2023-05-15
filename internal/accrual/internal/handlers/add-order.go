@@ -8,7 +8,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/rusalexch/loyalty-group/internal/accrual/internal/common"
+	"github.com/rusalexch/loyalty-group/internal/accrual/internal/app"
 )
 
 func (h *handlers) addOrder(w http.ResponseWriter, r *http.Request) {
@@ -29,7 +29,7 @@ func (h *handlers) addOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var order common.OrderGoods
+	var order app.OrderGoods
 
 	if err := json.Unmarshal(body, &order); err != nil {
 		log.Println("handler > addOrder > can't unmarshal body")
@@ -42,7 +42,7 @@ func (h *handlers) addOrder(w http.ResponseWriter, r *http.Request) {
 	if err == nil && isExist.ID == order.ID {
 		w.WriteHeader(http.StatusConflict)
 		return
-	} else if !errors.Is(err, common.ErrOrderNotFound) {
+	} else if !errors.Is(err, app.ErrOrderNotFound) {
 		log.Println("handler > addOrder > can't get order by ID")
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)

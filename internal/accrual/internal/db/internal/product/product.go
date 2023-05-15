@@ -9,14 +9,14 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/rusalexch/loyalty-group/internal/accrual/internal/common"
+	"github.com/rusalexch/loyalty-group/internal/accrual/internal/app"
 )
 
 const insertStmt = "insertProduct"
 
 type product struct {
 	ID          int64   `db:"id"`
-	OrderID     int64  `db:"order_id"`
+	OrderID     int64   `db:"order_id"`
 	Description string  `db:"description"`
 	Price       float64 `db:"price"`
 }
@@ -52,7 +52,7 @@ func (repo *productRepository) init() error {
 }
 
 // Add добавление новых товаров
-func (repo *productRepository) Add(ctx context.Context, orderID int64, product []common.OrderProduct) error {
+func (repo *productRepository) Add(ctx context.Context, orderID int64, product []app.OrderProduct) error {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
 
@@ -79,18 +79,18 @@ func (repo *productRepository) Add(ctx context.Context, orderID int64, product [
 }
 
 // FindByOrderID поиск товаров по номеру заказа
-func (repo *productRepository) FindByOrderID(ctx context.Context, orderID int64) (order common.OrderGoods, err error) {
+func (repo *productRepository) FindByOrderID(ctx context.Context, orderID int64) (order app.OrderGoods, err error) {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
 
 	rows, err := repo.pool.Query(ctx, sqlFindOrderProducts, orderID)
 	if err != nil {
-		return common.OrderGoods{}, err
+		return app.OrderGoods{}, err
 	}
 	defer rows.Close()
 
 	order.ID = orderID
-	order.Goods = make([]common.OrderProduct, 0)
+	order.Goods = make([]app.OrderProduct, 0)
 
 	for rows.Next() {
 		var product product
@@ -108,8 +108,8 @@ func (repo *productRepository) FindByOrderID(ctx context.Context, orderID int64)
 }
 
 // dbToJSON преобразование структуры БД в структуру JSON
-func dbToJSON(product product) common.OrderProduct {
-	return common.OrderProduct{
+func dbToJSON(product product) app.OrderProduct {
+	return app.OrderProduct{
 		Description: product.Description,
 		Price:       product.Price,
 	}

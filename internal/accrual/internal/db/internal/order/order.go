@@ -9,7 +9,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/rusalexch/loyalty-group/internal/accrual/internal/common"
+	"github.com/rusalexch/loyalty-group/internal/accrual/internal/app"
 )
 
 type order struct {
@@ -61,7 +61,7 @@ func (repo *orderRepository) Add(ctx context.Context, orderID int64) error {
 }
 
 // FindByID поиск заказа по номеру
-func (repo *orderRepository) FindByID(ctx context.Context, orderID int64) (common.Order, error) {
+func (repo *orderRepository) FindByID(ctx context.Context, orderID int64) (app.Order, error) {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
 
@@ -69,7 +69,7 @@ func (repo *orderRepository) FindByID(ctx context.Context, orderID int64) (commo
 	row := repo.pool.QueryRow(ctx, sqlFindByID)
 	err := row.Scan(&order.ID, &order.Status, &order.Accrual)
 	if err != nil && errors.Is(err, pgx.ErrNoRows) {
-		return common.Order{}, common.ErrOrderNotFound
+		return app.Order{}, app.ErrOrderNotFound
 	}
 
 	return dbToJSON(order), err
@@ -86,7 +86,7 @@ func (repo *orderRepository) UpdateStatus(ctx context.Context, orderID int64, st
 }
 
 // Update изменения данных заказа
-func (repo *orderRepository) Update(ctx context.Context, order common.Order) error {
+func (repo *orderRepository) Update(ctx context.Context, order app.Order) error {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
 
@@ -132,8 +132,8 @@ func (repo *orderRepository) FindRegistered(ctx context.Context) ([]int64, error
 }
 
 // dbToJSON преобразование структуры БД в структуру JSON
-func dbToJSON(order order) common.Order {
-	return common.Order{
+func dbToJSON(order order) app.Order {
+	return app.Order{
 		ID:      order.ID,
 		Status:  order.Status,
 		Accrual: &order.Accrual,

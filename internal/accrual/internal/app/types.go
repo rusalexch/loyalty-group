@@ -1,4 +1,4 @@
-package common
+package app
 
 // Order начисления на заказ
 type Order struct {

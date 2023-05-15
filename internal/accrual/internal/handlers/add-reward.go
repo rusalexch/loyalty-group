@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/rusalexch/loyalty-group/internal/accrual/internal/common"
+	"github.com/rusalexch/loyalty-group/internal/accrual/internal/app"
 )
 
 func (h *handlers) addReward(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +28,7 @@ func (h *handlers) addReward(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var reward common.Reward
+	var reward app.Reward
 
 	err = json.Unmarshal(body, &reward)
 	if err != nil {

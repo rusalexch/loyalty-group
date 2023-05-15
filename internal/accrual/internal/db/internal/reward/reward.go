@@ -9,7 +9,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/rusalexch/loyalty-group/internal/accrual/internal/common"
+	"github.com/rusalexch/loyalty-group/internal/accrual/internal/app"
 )
 
 type reward struct {
@@ -49,7 +49,7 @@ func (repo *rewardRepository) init() error {
 }
 
 // Add добавление нового начисления
-func (repo *rewardRepository) Add(ctx context.Context, reward common.Reward) error {
+func (repo *rewardRepository) Add(ctx context.Context, reward app.Reward) error {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
 
@@ -59,7 +59,7 @@ func (repo *rewardRepository) Add(ctx context.Context, reward common.Reward) err
 }
 
 // Find поиск начисления по наименованию товара
-func (repo *rewardRepository) Find(ctx context.Context, description string) (common.Reward, error) {
+func (repo *rewardRepository) Find(ctx context.Context, description string) (app.Reward, error) {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
 
@@ -67,13 +67,13 @@ func (repo *rewardRepository) Find(ctx context.Context, description string) (com
 	row := repo.pool.QueryRow(ctx, sqlFindRewards, description)
 	err := row.Scan(&reward)
 	if err != nil && errors.Is(err, pgx.ErrNoRows) {
-		return common.Reward{}, common.ErrRewardNotFound
+		return app.Reward{}, app.ErrRewardNotFound
 	}
 
 	return dbToJSON(reward), err
 }
 
-func (repo *rewardRepository) FindByID(ctx context.Context, ID string) (common.Reward, error) {
+func (repo *rewardRepository) FindByID(ctx context.Context, ID string) (app.Reward, error) {
 	repo.mx.Lock()
 	defer repo.mx.Unlock()
 
@@ -81,15 +81,15 @@ func (repo *rewardRepository) FindByID(ctx context.Context, ID string) (common.R
 	row := repo.pool.QueryRow(ctx, sqlFindByID, ID)
 	err := row.Scan(&reward)
 	if err != nil && errors.Is(err, pgx.ErrNoRows) {
-		return common.Reward{}, common.ErrRewardNotFound
+		return app.Reward{}, app.ErrRewardNotFound
 	}
 
 	return dbToJSON(reward), err
 }
 
 // dbToJSON преобразование структуры БД в структуру JSON
-func dbToJSON(reward reward) common.Reward {
-	return common.Reward{
+func dbToJSON(reward reward) app.Reward {
+	return app.Reward{
 		ID:     reward.ID,
 		Type:   reward.Type,
 		Reward: reward.Reward,
