@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,8 +13,7 @@ import (
 )
 
 func (h *handlers) getOrder(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(context.Background(), h.timeout)
-	defer cancel()
+	ctx := r.Context()
 
 	orderID := chi.URLParam(r, "orderID")
 	ID, err := strconv.ParseInt(orderID, 10, 64)

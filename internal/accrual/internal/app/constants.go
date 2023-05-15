@@ -9,5 +9,5 @@ const (
 
 const (
 	Percentage = "%"
-	Fixed = "pt"
+	Fixed      = "pt"
 )

@@ -41,6 +41,7 @@ func (h *handlers) Start() {
 	h.mux.Use(middleware.RequestID)
 	h.mux.Use(middleware.RealIP)
 	h.mux.Use(httplog.RequestLogger(logger))
+	h.mux.Use(timeoutMiddleware)
 	h.mux.Use(middleware.Compress(5, "application/json"))
 	h.mux.Use(middleware.Recoverer)
 

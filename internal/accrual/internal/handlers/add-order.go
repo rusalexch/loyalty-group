@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -12,8 +11,7 @@ import (
 )
 
 func (h *handlers) addOrder(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(context.Background(), h.timeout)
-	defer cancel()
+	ctx := r.Context()
 
 	body, err := io.ReadAll(r.Body)
 	defer r.Body.Close()
