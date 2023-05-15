@@ -2,12 +2,17 @@ package order
 
 // запрос на создание типа статус заказа
 const sqlCreateOrderStatus = `
-CREATE TYPE order_status AS ENUM ('REGISTERED', 'INVALID', 'PROCESSING', 'PROCESSED');
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'order_status') THEN
+			CREATE TYPE order_status AS ENUM ('REGISTERED', 'INVALID', 'PROCESSING', 'PROCESSED');
+    END IF;
+END$$;
 `
 
 // sqlCreateOrders запрос на создание таблицы заказов
 const sqlCreateOrders = `
-CREATE TABLE IF NOT EXIST orders (
+CREATE TABLE IF NOT EXISTS orders (
 	id bigint PRIMARY KEY,
 	status order_status DEFAULT 'REGISTERED',
 	accrual double precision DEFAULT null

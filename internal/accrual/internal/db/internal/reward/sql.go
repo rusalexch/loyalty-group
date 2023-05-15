@@ -2,7 +2,7 @@ package reward
 
 // запрос создания таблицы начислений
 const sqlCreateRewards = `
-CREATE TABLE IF NOT EXIST rewards (
+CREATE TABLE IF NOT EXISTS rewards (
 	id varchar PRIMARY KEY,
 	type varchar NOT NULL,
 	reward double precision NOT NULL
