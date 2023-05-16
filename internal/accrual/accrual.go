@@ -21,6 +21,7 @@ func Start(config Config) {
 		ProductRepo: storage.ProductRepo,
 		RewardRepo:  storage.RewardRepo,
 	})
+	defer srv.Stop()
 	server := handlers.New(config.Address, srv)
 
 	log.Printf("accrual > starting on %s\n", config.Address)

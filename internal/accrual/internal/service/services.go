@@ -33,16 +33,16 @@ type service struct {
 
 // New конструктор сервиса
 func New(conf ServiceConfig) *service {
+	ticker := time.NewTicker(1 * time.Second)
 	s := &service{
 		store:       conf.Store,
 		orderRepo:   conf.OrderRepo,
 		productRepo: conf.ProductRepo,
 		rewardRepo:  conf.RewardRepo,
 		tick:        defaultTick,
-		ticker:      time.NewTicker(defaultTick),
+		ticker:      ticker,
 		calcChan:    make(chan int64, 10),
 	}
-	defer s.destroy()
 
 	go s.run()
 
@@ -90,7 +90,7 @@ func (s *service) AddOrder(ctx context.Context, order app.OrderGoods) error {
 }
 
 // destroy метод завершения сервиса
-func (s *service) destroy() {
+func (s *service) Stop() {
 	s.ticker.Stop()
 	close(s.calcChan)
 }
