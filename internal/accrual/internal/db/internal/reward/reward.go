@@ -57,7 +57,7 @@ func (repo *rewardRepository) Add(ctx context.Context, reward app.Reward) error 
 func (repo *rewardRepository) Find(ctx context.Context, description string) (app.Reward, error) {
 	var reward reward
 	row := repo.pool.QueryRow(ctx, sqlFindRewards, description)
-	err := row.Scan(&reward)
+	err := row.Scan(&reward.ID, &reward.Type, &reward.Reward)
 	if err != nil && errors.Is(err, pgx.ErrNoRows) {
 		return app.Reward{}, app.ErrRewardNotFound
 	}

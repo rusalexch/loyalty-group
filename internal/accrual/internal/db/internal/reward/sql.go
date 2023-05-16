@@ -20,7 +20,7 @@ INSERT INTO rewards VALUES($1, $2, $3) ON CONFLICT (id) DO UPDATE SET type = $2,
 // запрос поиска начисления по названию товара
 // $1 - название товара
 const sqlFindRewards = `
-SELECT * FROM rewards r WHERE $1 = '%' || r.id || '%' limit 1;
+SELECT * FROM rewards r WHERE LOWER($1) LIKE '%' || LOWER(r.id) || '%' limit 1;
 `
 
 // запрос поиска начисления по названию товара
