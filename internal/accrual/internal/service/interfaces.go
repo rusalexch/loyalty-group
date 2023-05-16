@@ -6,6 +6,8 @@ import (
 	"github.com/rusalexch/loyalty-group/internal/accrual/internal/app"
 )
 
+//go:generate mockgen -source=interfaces.go -destination=mocks/mock.go
+
 type storager interface {
 	Ping(ctx context.Context) error
 }

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"log"
 	"net/http"
@@ -36,20 +37,12 @@ func (h *handlers) addReward(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	isExist, err := h.service.IsRewardExist(ctx, reward.ID)
-	if err != nil {
-		log.Println("handler > addReward > can't get reward by ID")
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	if isExist {
-		w.WriteHeader(http.StatusConflict)
-		return
-	}
-
 	if err = h.service.AddReward(ctx, reward); err != nil {
+		if errors.Is(err, app.ErrRewardAlreadyExist) {
+			log.Println("handlre > addReward > reward already exist")
+			w.WriteHeader(http.StatusConflict)
+			return
+		}
 		log.Println("handlre > addReward > can't add reward")
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)

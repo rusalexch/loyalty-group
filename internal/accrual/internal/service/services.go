@@ -60,10 +60,18 @@ func (s *service) GetOrder(ctx context.Context, orderID int64) (app.Order, error
 
 // AddReward добавление/изменение схемы начисления
 func (s *service) AddReward(ctx context.Context, reward app.Reward) error {
+	isExies, err := s.isRewardExist(ctx, reward.ID)
+	if err != nil {
+		return err
+	}
+	if isExies {
+		return app.ErrRewardAlreadyExist
+	}
+
 	return s.rewardRepo.Add(ctx, reward)
 }
 
-func (s *service) IsRewardExist(ctx context.Context, rewardID string) (bool, error) {
+func (s *service) isRewardExist(ctx context.Context, rewardID string) (bool, error) {
 	reward, err := s.rewardRepo.FindByID(ctx, rewardID)
 	if err == nil && reward.ID == rewardID {
 		return true, nil
