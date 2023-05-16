@@ -33,14 +33,13 @@ type service struct {
 
 // New конструктор сервиса
 func New(conf ServiceConfig) *service {
-	ticker := time.NewTicker(1 * time.Second)
 	s := &service{
 		store:       conf.Store,
 		orderRepo:   conf.OrderRepo,
 		productRepo: conf.ProductRepo,
 		rewardRepo:  conf.RewardRepo,
 		tick:        defaultTick,
-		ticker:      ticker,
+		ticker:      time.NewTicker(defaultTick),
 		calcChan:    make(chan int64, 10),
 	}
 
