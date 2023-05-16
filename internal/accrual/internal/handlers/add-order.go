@@ -36,6 +36,12 @@ func (h *handlers) addOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !order.IsValid() {
+		log.Printf("handler > getOrder > order ID isn't valid: %d", order.ID)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	isExist, err := h.service.GetOrder(ctx, order.ID)
 	if err == nil && isExist.ID == order.ID {
 		w.WriteHeader(http.StatusConflict)

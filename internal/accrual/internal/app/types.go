@@ -1,5 +1,7 @@
 package app
 
+import "github.com/rusalexch/loyalty-group/internal/validator"
+
 // Order начисления на заказ
 type Order struct {
 	ID      int64    `json:"order"`
@@ -16,6 +18,10 @@ type Reward struct {
 type OrderGoods struct {
 	ID    int64          `json:"order"`
 	Goods []OrderProduct `json:"goods"`
+}
+
+func (o *OrderGoods) IsValid() bool {
+	return validator.IsValid(o.ID)
 }
 
 // OrderProduct

@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/rusalexch/loyalty-group/internal/accrual/internal/app"
+	"github.com/rusalexch/loyalty-group/internal/validator"
 )
 
 func (h *handlers) getOrder(w http.ResponseWriter, r *http.Request) {
@@ -30,6 +31,12 @@ func (h *handlers) getOrder(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add(retryAfter, "60")
 		w.WriteHeader(http.StatusTooManyRequests)
 		w.Write([]byte(fmt.Sprintf("No more than %d requests per minute allowed", h.maxRequest)))
+		return
+	}
+
+	if !validator.IsValid(ID) {
+		log.Printf("handler > getOrder > order ID isn't valid: %d", ID)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
