@@ -14,21 +14,21 @@ import (
 type handlers struct {
 	address      string
 	service      service
-	timeout      time.Duration
 	mux          *chi.Mux
 	maxRequest   int
-	mx           *sync.Mutex
+	mx           sync.Mutex
 	reqPerMinute map[string]int
 	ticker       *time.Ticker
 }
 
 func New(address string, service service) *handlers {
 	h := &handlers{
-		address: address,
-		service: service,
-		timeout: 5 * time.Second,
-		mux:     chi.NewMux(),
-		ticker:  time.NewTicker(time.Minute),
+		address:      address,
+		service:      service,
+		mux:          chi.NewMux(),
+		ticker:       time.NewTicker(time.Minute),
+		reqPerMinute: map[string]int{},
+		maxRequest:   60,
 	}
 
 	return h
@@ -45,8 +45,8 @@ func (h *handlers) Start() {
 	h.mux.Use(middleware.Compress(5, "application/json"))
 	h.mux.Use(middleware.Recoverer)
 
-	h.mux.Get("/", h.ping)
-	h.mux.Get("/api/orders/{orderID}", h.getOrder)
+	h.mux.Get("/ping", h.ping)
+	h.mux.Get("/api/orders/{ID}", h.getOrder)
 	h.mux.Post("/api/orders", h.addOrder)
 	h.mux.Post("/api/goods", h.addReward)
 

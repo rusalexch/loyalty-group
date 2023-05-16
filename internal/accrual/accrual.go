@@ -1,6 +1,8 @@
 package accrual
 
 import (
+	"log"
+
 	"github.com/rusalexch/loyalty-group/internal/accrual/internal/db"
 	"github.com/rusalexch/loyalty-group/internal/accrual/internal/handlers"
 	"github.com/rusalexch/loyalty-group/internal/accrual/internal/service"
@@ -20,6 +22,8 @@ func Start(config Config) {
 		RewardRepo:  storage.RewardRepo,
 	})
 	server := handlers.New(config.Address, srv)
+
+	log.Printf("accrual > starting on %s\n", config.Address)
 
 	server.Start()
 }

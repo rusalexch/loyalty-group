@@ -2,6 +2,7 @@ package order
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"log"
 	"time"
@@ -12,9 +13,9 @@ import (
 )
 
 type order struct {
-	ID      int64   `db:"id"`
-	Status  string  `db:"status"`
-	Accrual float64 `db:"accrual"`
+	ID      int64           `db:"id"`
+	Status  string          `db:"status"`
+	Accrual sql.NullFloat64 `db:"accrual"`
 }
 
 type orderRepository struct {
@@ -59,11 +60,13 @@ func (repo *orderRepository) Add(ctx context.Context, orderID int64) error {
 // FindByID поиск заказа по номеру
 func (repo *orderRepository) FindByID(ctx context.Context, orderID int64) (app.Order, error) {
 	var order order
-	row := repo.pool.QueryRow(ctx, sqlFindByID)
+	row := repo.pool.QueryRow(ctx, sqlFindByID, orderID)
 	err := row.Scan(&order.ID, &order.Status, &order.Accrual)
 	if err != nil && errors.Is(err, pgx.ErrNoRows) {
 		return app.Order{}, app.ErrOrderNotFound
 	}
+	log.Println(err)
+	// FIXME cannot scan NULL into *float64
 
 	return dbToJSON(order), err
 }
@@ -114,9 +117,13 @@ func (repo *orderRepository) FindRegistered(ctx context.Context) ([]int64, error
 
 // dbToJSON преобразование структуры БД в структуру JSON
 func dbToJSON(order order) app.Order {
+	var accrual *float64 = nil
+	if order.Accrual.Valid {
+		accrual = &order.Accrual.Float64
+	}
 	return app.Order{
 		ID:      order.ID,
 		Status:  order.Status,
-		Accrual: &order.Accrual,
+		Accrual: accrual,
 	}
 }
