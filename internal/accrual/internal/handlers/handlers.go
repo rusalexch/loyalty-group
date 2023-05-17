@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -12,7 +11,6 @@ import (
 )
 
 type handlers struct {
-	address      string
 	service      service
 	mux          *chi.Mux
 	maxRequest   int
@@ -21,9 +19,8 @@ type handlers struct {
 	ticker       *time.Ticker
 }
 
-func New(address string, service service) *handlers {
+func New(service service) http.Handler {
 	h := &handlers{
-		address:      address,
 		service:      service,
 		mux:          chi.NewMux(),
 		ticker:       time.NewTicker(time.Minute),
@@ -31,10 +28,12 @@ func New(address string, service service) *handlers {
 		maxRequest:   60,
 	}
 
-	return h
+	h.init()
+
+	return h.mux
 }
 
-func (h *handlers) Start() {
+func (h *handlers) init() {
 	logger := httplog.NewLogger("httplog", httplog.Options{
 		JSON: true,
 	})
@@ -55,8 +54,6 @@ func (h *handlers) Start() {
 			h.resetRequestCounter()
 		}
 	}()
-
-	log.Println(http.ListenAndServe(h.address, h.mux))
 }
 
 func (h *handlers) resetRequestCounter() {

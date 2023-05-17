@@ -5,6 +5,7 @@ import (
 
 	"github.com/rusalexch/loyalty-group/internal/accrual/internal/db"
 	"github.com/rusalexch/loyalty-group/internal/accrual/internal/handlers"
+	"github.com/rusalexch/loyalty-group/internal/accrual/internal/server"
 	"github.com/rusalexch/loyalty-group/internal/accrual/internal/service"
 )
 
@@ -22,9 +23,9 @@ func Start(config Config) {
 		RewardRepo:  storage.RewardRepo,
 	})
 	defer srv.Stop()
-	server := handlers.New(config.Address, srv)
+
+	h := handlers.New(srv)
 
 	log.Printf("accrual > starting on %s\n", config.Address)
-
-	server.Start()
+	log.Println(server.New(config.Address, h).Start())
 }
