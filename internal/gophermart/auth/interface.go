@@ -1,0 +1,13 @@
+package auth
+
+import (
+	"context"
+
+	"github.com/rusalexch/loyalty-group/internal/gophermart/app"
+)
+
+type userService interface {
+	FindById(ctx context.Context, userID int) (app.User, error)
+	FundByLogin(ctx context.Context, login string) (app.User, error)
+	Create(ctx context.Context, user app.CreateUser) (app.User, error)
+}
