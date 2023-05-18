@@ -33,7 +33,7 @@ func New(conf Config) *authModule {
 	return module
 }
 
-func (am *authModule) CheckToken(authToken string) (int, error) {
+func (am *authModule) CheckToken(ctx context.Context, authToken string) (app.User, error) {
 	token, err := jwt.Parse(authToken, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
@@ -43,11 +43,16 @@ func (am *authModule) CheckToken(authToken string) (int, error) {
 	})
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		if userId, ok := claims["user"]; ok {
-			return userId.(int), nil
+			user, err := am.userService.FindById(ctx, userId.(int))
+			if err != nil {
+				return app.User{}, err
+			}
+
+			return user, nil
 		}
 	}
 
-	return 0, err
+	return app.User{}, err
 }
 
 func (am *authModule) init() {
