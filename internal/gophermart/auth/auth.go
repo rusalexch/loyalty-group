@@ -33,6 +33,23 @@ func New(conf Config) *authModule {
 	return module
 }
 
+func (am *authModule) CheckToken(authToken string) (int, error) {
+	token, err := jwt.Parse(authToken, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method")
+		}
+
+		return am.jwtSecret, nil
+	})
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		if userId, ok := claims["user"]; ok {
+			return userId.(int), nil
+		}
+	}
+
+	return 0, err
+}
+
 func (am *authModule) init() {
 	am.mux.Post(registerPattern, am.register)
 	am.mux.Post(loginPattern, am.login)
@@ -53,9 +70,9 @@ func validate(password, hash string) (bool, error) {
 	return true, nil
 }
 
-func (am *authModule) token(user int) (string, error) {
+func (am *authModule) token(userID int) (string, error) {
 	t := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
-		"user": user,
+		"user": userID,
 	})
 	return t.SignedString(am.jwtSecret)
 }
