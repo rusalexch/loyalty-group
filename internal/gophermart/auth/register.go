@@ -35,6 +35,12 @@ func (am *authModule) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if signup.Login == "" && signup.Password == "" {
+		log.Println("auth > register > login and/or password is empty")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	token, err := am.signup(ctx, signup)
 	if err != nil {
 		log.Println("auth > register > can't signup")

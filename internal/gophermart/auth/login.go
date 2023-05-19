@@ -35,6 +35,12 @@ func (am *authModule) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if login.Login == "" && login.Password == "" {
+		log.Println("auth > register > login and/or password is empty")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	token, err := am.signin(ctx, login)
 	if err != nil {
 		log.Println("auth > login > can't signin")
