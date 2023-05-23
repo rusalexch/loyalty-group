@@ -103,7 +103,17 @@ func (om *orderModule) create(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	if errors.Is(err, app.ErrNotFound) {
+		err = om.add(ctx, user.ID, orderID)
+		if err != nil {
+			log.Println("order > create > can't create order")
+			log.Println(err)
+			return
+		}
 
+		w.WriteHeader(http.StatusAccepted)
+		return
+	}
 	if order.UserID == user.ID {
 		log.Println("order > create > already created by user")
 		w.WriteHeader(http.StatusOK)
@@ -115,12 +125,4 @@ func (om *orderModule) create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = om.add(ctx, user.ID, orderID)
-	if err != nil {
-		log.Println("order > create > can't create order")
-		log.Println(err)
-		return
-	}
-
-	w.WriteHeader(http.StatusAccepted)
 }
