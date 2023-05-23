@@ -5,23 +5,10 @@ import (
 	"errors"
 	"log"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/rusalexch/loyalty-group/internal/gophermart/app"
 	"golang.org/x/crypto/bcrypt"
 )
-
-type Config struct {
-	Mux         *chi.Mux
-	UserService userService
-	JwtSecret   string
-}
-
-type authModule struct {
-	mux         *chi.Mux
-	userService userService
-	jwtSecret   string
-}
 
 func New(conf Config) *authModule {
 	module := &authModule{
@@ -32,6 +19,10 @@ func New(conf Config) *authModule {
 	module.init()
 
 	return module
+}
+
+func (am *authModule) init() {
+	am.initHandler()
 }
 
 func (am *authModule) CheckToken(ctx context.Context, authToken string) (app.User, error) {
@@ -54,11 +45,6 @@ func (am *authModule) CheckToken(ctx context.Context, authToken string) (app.Use
 	}
 
 	return app.User{}, err
-}
-
-func (am *authModule) init() {
-	am.mux.Post(registerPattern, am.register)
-	am.mux.Post(loginPattern, am.login)
 }
 
 func hash(password string) (string, error) {
