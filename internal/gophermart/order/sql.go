@@ -5,7 +5,7 @@ const sqlCreateTable = `
 CREATE TABLE IF NOT EXISTS user_orders (
 	id bigint PRIMARY KEY,
 	user_id integer,
-	status order_status DEFAULT 'REGISTERED',
+	status order_status DEFAULT 'NEW',
 	accrual double precision DEFAULT null,
 	uploaded_at timestamp,
 	CONSTRAINT user_order_key FOREIGN KEY (user_id) REFERENCES users (id)
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS user_orders (
 // $1 - идентификатор заказа
 // $2 - идентификатор пользователя
 const sqlAdd = `
-INSERT INTO user_orders VALUES ($1, $2, 'REGISTERED', DEFAULT, now());
+INSERT INTO user_orders VALUES ($1, $2, 'NEW', DEFAULT, now());
 `
 
 // sqlFindByID - запрос на поиск заказа по ID
@@ -33,7 +33,7 @@ SELECT * FROM user_orders WHERE user_id = $1 ORDER BY uploaded_at DESC;
 
 // sqlFindREgistered - запрос на поиск заказов со статусом REGISTERED
 const sqlFindRegistered = `
-SELECT * FROM user_orders WHERE status = 'REGISTERED';
+SELECT * FROM user_orders WHERE status = 'NEW';
 `
 
 // sqlUpdateOrder - запрос на обновление заказа
