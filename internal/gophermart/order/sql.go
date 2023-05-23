@@ -28,7 +28,7 @@ SELECT * FROM user_orders WHERE id = $1;
 // sqlFundByUserID - запрос на поиск заказов по идентификатору пользователя
 // $1 - идентификатор пользователя
 const sqlFundByUserID = `
-SELECT * FROM user_orders WHERE user_id = $1;
+SELECT * FROM user_orders WHERE user_id = $1 ORDER BY uploaded_at DESC;
 `
 
 // sqlFindREgistered - запрос на поиск заказов со статусом REGISTERED
