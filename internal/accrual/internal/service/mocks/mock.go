@@ -73,7 +73,7 @@ func (m *MockorderRepository) EXPECT() *MockorderRepositoryMockRecorder {
 }
 
 // Add mocks base method.
-func (m *MockorderRepository) Add(ctx context.Context, orderID int64) error {
+func (m *MockorderRepository) Add(ctx context.Context, orderID string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Add", ctx, orderID)
 	ret0, _ := ret[0].(error)
@@ -87,7 +87,7 @@ func (mr *MockorderRepositoryMockRecorder) Add(ctx, orderID interface{}) *gomock
 }
 
 // Delete mocks base method.
-func (m *MockorderRepository) Delete(ctx context.Context, orderID int64) error {
+func (m *MockorderRepository) Delete(ctx context.Context, orderID string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", ctx, orderID)
 	ret0, _ := ret[0].(error)
@@ -101,7 +101,7 @@ func (mr *MockorderRepositoryMockRecorder) Delete(ctx, orderID interface{}) *gom
 }
 
 // FindByID mocks base method.
-func (m *MockorderRepository) FindByID(ctx context.Context, orderID int64) (app.Order, error) {
+func (m *MockorderRepository) FindByID(ctx context.Context, orderID string) (app.Order, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByID", ctx, orderID)
 	ret0, _ := ret[0].(app.Order)
@@ -116,10 +116,10 @@ func (mr *MockorderRepositoryMockRecorder) FindByID(ctx, orderID interface{}) *g
 }
 
 // FindRegistered mocks base method.
-func (m *MockorderRepository) FindRegistered(ctx context.Context) ([]int64, error) {
+func (m *MockorderRepository) FindRegistered(ctx context.Context) ([]string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindRegistered", ctx)
-	ret0, _ := ret[0].([]int64)
+	ret0, _ := ret[0].([]string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -145,7 +145,7 @@ func (mr *MockorderRepositoryMockRecorder) Update(ctx, order interface{}) *gomoc
 }
 
 // UpdateStatus mocks base method.
-func (m *MockorderRepository) UpdateStatus(ctx context.Context, orderID int64, status string) error {
+func (m *MockorderRepository) UpdateStatus(ctx context.Context, orderID, status string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateStatus", ctx, orderID, status)
 	ret0, _ := ret[0].(error)
@@ -182,7 +182,7 @@ func (m *MockproductRepository) EXPECT() *MockproductRepositoryMockRecorder {
 }
 
 // Add mocks base method.
-func (m *MockproductRepository) Add(ctx context.Context, orderID int64, product []app.OrderProduct) error {
+func (m *MockproductRepository) Add(ctx context.Context, orderID string, product []app.OrderProduct) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Add", ctx, orderID, product)
 	ret0, _ := ret[0].(error)
@@ -196,7 +196,7 @@ func (mr *MockproductRepositoryMockRecorder) Add(ctx, orderID, product interface
 }
 
 // FindByOrderID mocks base method.
-func (m *MockproductRepository) FindByOrderID(ctx context.Context, orderID int64) (app.OrderGoods, error) {
+func (m *MockproductRepository) FindByOrderID(ctx context.Context, orderID string) (app.OrderGoods, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByOrderID", ctx, orderID)
 	ret0, _ := ret[0].(app.OrderGoods)

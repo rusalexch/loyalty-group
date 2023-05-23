@@ -59,7 +59,7 @@ func Test_service_Ping(t *testing.T) {
 
 func Test_service_GetOrder(t *testing.T) {
 	type args struct {
-		orderID int64
+		orderID string
 		order   app.Order
 		err     error
 	}
@@ -77,9 +77,9 @@ func Test_service_GetOrder(t *testing.T) {
 		{
 			name: "return registered order",
 			args: args{
-				orderID: 1234,
+				orderID: "1234",
 				order: app.Order{
-					ID:     1234,
+					ID:     "1234",
 					Status: app.Registered,
 				},
 				err: nil,
@@ -89,7 +89,7 @@ func Test_service_GetOrder(t *testing.T) {
 			},
 			want: want{
 				order: app.Order{
-					ID:      1234,
+					ID:      "1234",
 					Status:  app.Registered,
 					Accrual: nil,
 				},
@@ -99,7 +99,7 @@ func Test_service_GetOrder(t *testing.T) {
 		{
 			name: "return not found",
 			args: args{
-				orderID: 1234,
+				orderID: "1234",
 				order:   app.Order{},
 				err:     app.ErrOrderNotFound,
 			},
@@ -307,7 +307,7 @@ func Test_service_AddOrder(t *testing.T) {
 			name: "add order",
 			args: args{
 				order: app.OrderGoods{
-					ID: 1234,
+					ID: "1234",
 					Goods: []app.OrderProduct{
 						{
 							Description: "some product",
@@ -328,7 +328,7 @@ func Test_service_AddOrder(t *testing.T) {
 			name: "can't create order",
 			args: args{
 				order: app.OrderGoods{
-					ID: 1234,
+					ID: "1234",
 					Goods: []app.OrderProduct{
 						{
 							Description: "some product",
@@ -349,7 +349,7 @@ func Test_service_AddOrder(t *testing.T) {
 			name: "can't add goods",
 			args: args{
 				order: app.OrderGoods{
-					ID: 1234,
+					ID: "1234",
 					Goods: []app.OrderProduct{
 						{
 							Description: "some product",

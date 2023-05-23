@@ -15,7 +15,7 @@ const insertStmt = "insertProduct"
 
 type product struct {
 	ID          int64   `db:"id"`
-	OrderID     int64   `db:"order_id"`
+	OrderID     string   `db:"order_id"`
 	Description string  `db:"description"`
 	Price       float64 `db:"price"`
 }
@@ -50,7 +50,7 @@ func (repo *productRepository) init() error {
 }
 
 // Add добавление новых товаров
-func (repo *productRepository) Add(ctx context.Context, orderID int64, product []app.OrderProduct) error {
+func (repo *productRepository) Add(ctx context.Context, orderID string, product []app.OrderProduct) error {
 	tx, err := repo.pool.Begin(ctx)
 	if err != nil {
 		return err
@@ -74,7 +74,7 @@ func (repo *productRepository) Add(ctx context.Context, orderID int64, product [
 }
 
 // FindByOrderID поиск товаров по номеру заказа
-func (repo *productRepository) FindByOrderID(ctx context.Context, orderID int64) (order app.OrderGoods, err error) {
+func (repo *productRepository) FindByOrderID(ctx context.Context, orderID string) (order app.OrderGoods, err error) {
 	rows, err := repo.pool.Query(ctx, sqlFindOrderProducts, orderID)
 	if err != nil {
 		return app.OrderGoods{}, err

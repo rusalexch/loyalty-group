@@ -15,13 +15,13 @@ import (
 )
 
 type accrual struct {
-	ID      int64    `json:"order"`
+	ID      string   `json:"order"`
 	Status  string   `json:"status"`
 	Accrual *float64 `json:"accrual,omitempty"`
 }
 
 type order struct {
-	ID         int64           `db:"id"`
+	ID         string          `db:"id"`
 	UserID     int             `db:"user_id"`
 	Status     string          `db:"status"`
 	Accrual    sql.NullFloat64 `db:"accrual"`
@@ -29,7 +29,7 @@ type order struct {
 }
 
 type updateOrder struct {
-	ID      int64
+	ID      string
 	Status  string
 	Accrual sql.NullFloat64
 }
@@ -39,7 +39,7 @@ type auth interface {
 }
 
 type balancer interface {
-	Add(ctx context.Context, orderID int64, amount float64) error
+	Add(ctx context.Context, orderID string, amount float64) error
 }
 
 type Config struct {
@@ -97,7 +97,7 @@ func (om *orderModule) init() {
 	go om.process()
 }
 
-func (om *orderModule) findByID(ctx context.Context, orderID int64) (order, error) {
+func (om *orderModule) findByID(ctx context.Context, orderID string) (order, error) {
 	var ord order
 	row := om.pool.QueryRow(ctx, sqlFindByID, orderID)
 	err := row.Scan(&ord.ID, &ord.UserID, &ord.Status, &ord.Accrual, &ord.UploadedAt)
@@ -133,7 +133,7 @@ func (om *orderModule) findByUserID(ctx context.Context, userID int) ([]order, e
 	return orders, nil
 }
 
-func (om *orderModule) add(ctx context.Context, userID int, orderID int64) error {
+func (om *orderModule) add(ctx context.Context, userID int, orderID string) error {
 	_, err := om.pool.Exec(ctx, sqlAdd, orderID, userID)
 
 	return err

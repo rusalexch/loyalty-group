@@ -28,7 +28,7 @@ type service struct {
 	rewardRepo  rewardRepository
 	tick        time.Duration
 	ticker      *time.Ticker
-	calcChan    chan int64
+	calcChan    chan string
 }
 
 // New конструктор сервиса
@@ -40,7 +40,7 @@ func New(conf ServiceConfig) *service {
 		rewardRepo:  conf.RewardRepo,
 		tick:        defaultTick,
 		ticker:      time.NewTicker(defaultTick),
-		calcChan:    make(chan int64, 10),
+		calcChan:    make(chan string, 10),
 	}
 
 	go s.run()
@@ -54,7 +54,7 @@ func (s *service) Ping(ctx context.Context) error {
 }
 
 // GetOrder получение данных по заказу
-func (s *service) GetOrder(ctx context.Context, orderID int64) (app.Order, error) {
+func (s *service) GetOrder(ctx context.Context, orderID string) (app.Order, error) {
 	return s.orderRepo.FindByID(ctx, orderID)
 }
 
@@ -155,7 +155,7 @@ func (s *service) findOrderToCalc() {
 }
 
 // calculate метода расчета заказов
-func (s *service) calculate(orderID int64) {
+func (s *service) calculate(orderID string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -188,7 +188,7 @@ func (s *service) calculate(orderID int64) {
 }
 
 // changeOrderStatus метод изменения статуса заказа
-func (s *service) changeOrderStatus(ctx context.Context, orderID int64, status string) error {
+func (s *service) changeOrderStatus(ctx context.Context, orderID string, status string) error {
 	err := s.orderRepo.UpdateStatus(ctx, orderID, app.Processing)
 	if err != nil {
 		log.Println("service > changeOrderStatus > can't change order status")
@@ -203,7 +203,7 @@ func (s *service) findRewards(ctx context.Context, goods []app.OrderProduct) map
 	res := make(map[string]app.Reward)
 	for _, product := range goods {
 		reward, err := s.rewardRepo.Find(ctx, product.Description)
-		if err != nil && !errors.Is(err, app.ErrOrderNotFound) {
+		if err != nil && !errors.Is(err, app.ErrRewardNotFound) {
 			log.Println("service > findRewards > can't find reward")
 			log.Println(err)
 		} else {

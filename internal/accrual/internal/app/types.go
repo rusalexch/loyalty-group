@@ -4,7 +4,7 @@ import "github.com/rusalexch/loyalty-group/internal/validator"
 
 // Order начисления на заказ
 type Order struct {
-	ID      int64    `json:"order"`
+	ID      string   `json:"order"`
 	Status  string   `json:"status"`
 	Accrual *float64 `json:"accrual,omitempty"`
 }
@@ -16,7 +16,7 @@ type Reward struct {
 }
 
 type OrderGoods struct {
-	ID    int64          `json:"order"`
+	ID    string         `json:"order"`
 	Goods []OrderProduct `json:"goods"`
 }
 

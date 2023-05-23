@@ -18,7 +18,7 @@ type balance struct {
 }
 
 type withdrawRequest struct {
-	OrderID int64   `json:"order"`
+	OrderID string  `json:"order"`
 	Amount  float64 `json:"sum"`
 }
 
@@ -50,6 +50,6 @@ func (am *accountModule) init() {
 	am.initHandler()
 }
 
-func (am *accountModule) Add(ctx context.Context, orderID int64, amount float64) error {
+func (am *accountModule) Add(ctx context.Context, orderID string, amount float64) error {
 	return am.addDebit(ctx, orderID, amount)
 }

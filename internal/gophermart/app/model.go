@@ -14,7 +14,7 @@ type CreateUser struct {
 }
 
 type Order struct {
-	ID         int64     `json:"number"`
+	ID         string     `json:"number"`
 	Status     string    `json:"status"`
 	Accrual    *float64  `json:"accrual,omitempty"`
 	UploadedAt time.Time `json:"uploaded_at"`

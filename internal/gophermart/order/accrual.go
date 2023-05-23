@@ -75,6 +75,6 @@ func (om *orderModule) getAccrual() {
 	}
 }
 
-func (om *orderModule) requestURL(orderID int64) string {
+func (om *orderModule) requestURL(orderID string) string {
 	return fmt.Sprintf("%s/%d", om.accrualAddress, orderID)
 }

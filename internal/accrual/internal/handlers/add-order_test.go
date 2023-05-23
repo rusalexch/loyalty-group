@@ -54,7 +54,7 @@ func Test_handlers_addOrder(t *testing.T) {
 			name: "add order: OK",
 			args: args{
 				order: app.OrderGoods{
-					ID: 4561261212345467,
+					ID: "4561261212345467",
 					Goods: []app.OrderProduct{
 						{
 							Description: "Чайник Bork",
@@ -65,7 +65,7 @@ func Test_handlers_addOrder(t *testing.T) {
 				existOrder:  app.Order{},
 				getOrderErr: app.ErrOrderNotFound,
 				addOrderErr: nil,
-				requestBody: `{"order":4561261212345467,"goods":[{"description":"Чайник Bork","price":7000}]}`,
+				requestBody: `{"order":"4561261212345467","goods":[{"description":"Чайник Bork","price":7000}]}`,
 			},
 			want: want{
 				code: 202,
@@ -75,7 +75,7 @@ func Test_handlers_addOrder(t *testing.T) {
 			name: "add order: bad request",
 			args: args{
 				order: app.OrderGoods{
-					ID: 4561261212345467,
+					ID: "4561261212345467",
 					Goods: []app.OrderProduct{
 						{
 							Description: "Чайник Bork",
@@ -84,13 +84,13 @@ func Test_handlers_addOrder(t *testing.T) {
 					},
 				},
 				existOrder: app.Order{
-					ID:      4561261212345467,
+					ID:      "4561261212345467",
 					Status:  app.Registered,
 					Accrual: nil,
 				},
 				getOrderErr: nil,
 				addOrderErr: nil,
-				requestBody: `{"order":4561261212345467,"goods":[{"description":"Чайник Bork","price":7000}]}`,
+				requestBody: `{"order":"4561261212345467","goods":[{"description":"Чайник Bork","price":7000}]}`,
 			},
 			want: want{
 				code: 409,
@@ -100,7 +100,7 @@ func Test_handlers_addOrder(t *testing.T) {
 			name: "add order: already exist",
 			args: args{
 				order: app.OrderGoods{
-					ID: 3,
+					ID: "3",
 					Goods: []app.OrderProduct{
 						{
 							Description: "Чайник Bork",
@@ -111,7 +111,7 @@ func Test_handlers_addOrder(t *testing.T) {
 				existOrder:  app.Order{},
 				getOrderErr: app.ErrOrderNotFound,
 				addOrderErr: nil,
-				requestBody: `{"order":3,"goods":[{"description":"Чайник Bork","price":7000}]}`,
+				requestBody: `{"order":"3","goods":[{"description":"Чайник Bork","price":7000}]}`,
 			},
 			want: want{
 				code: 400,

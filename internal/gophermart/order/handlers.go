@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/rusalexch/loyalty-group/internal/gophermart/app"
 	"github.com/rusalexch/loyalty-group/internal/validator"
@@ -89,13 +88,7 @@ func (om *orderModule) create(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	orderID, err := strconv.ParseInt(string(body), 10, 0)
-	if err != nil {
-		log.Printf("order > create > can't read order ID: %s\n", string(body))
-		log.Println(err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	orderID := string(body)
 
 	if !validator.IsValid(orderID) {
 		log.Printf("order > create > invalid order ID: %d\n", orderID)

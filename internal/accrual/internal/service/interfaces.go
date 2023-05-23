@@ -13,17 +13,17 @@ type storager interface {
 }
 
 type orderRepository interface {
-	Add(ctx context.Context, orderID int64) error
-	FindByID(ctx context.Context, orderID int64) (app.Order, error)
-	UpdateStatus(ctx context.Context, orderID int64, status string) error
+	Add(ctx context.Context, orderID string) error
+	FindByID(ctx context.Context, orderID string) (app.Order, error)
+	UpdateStatus(ctx context.Context, orderID string, status string) error
 	Update(ctx context.Context, order app.Order) error
-	Delete(ctx context.Context, orderID int64) error
-	FindRegistered(ctx context.Context) ([]int64, error)
+	Delete(ctx context.Context, orderID string) error
+	FindRegistered(ctx context.Context) ([]string, error)
 }
 
 type productRepository interface {
-	Add(ctx context.Context, orderID int64, product []app.OrderProduct) error
-	FindByOrderID(ctx context.Context, orderID int64) (app.OrderGoods, error)
+	Add(ctx context.Context, orderID string, product []app.OrderProduct) error
+	FindByOrderID(ctx context.Context, orderID string) (app.OrderGoods, error)
 }
 
 type rewardRepository interface {

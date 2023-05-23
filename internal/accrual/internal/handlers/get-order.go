@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/rusalexch/loyalty-group/internal/accrual/internal/app"
@@ -16,14 +15,7 @@ import (
 func (h *handlers) getOrder(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	orderID := chi.URLParam(r, "ID")
-	ID, err := strconv.ParseInt(orderID, 10, 64)
-	if err != nil {
-		log.Println("handlers > getOrder > can't convert orderID")
-		log.Println(err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	ID := chi.URLParam(r, "ID")
 
 	ip := r.RemoteAddr
 	if h.isLimitRequest(ip) {

@@ -2,7 +2,7 @@
 // Source: interface.go
 
 // Package mock_handlers is a generated GoMock package.
-package mocks
+package mock_handlers
 
 import (
 	context "context"
@@ -64,7 +64,7 @@ func (mr *MockserviceMockRecorder) AddReward(ctx, product interface{}) *gomock.C
 }
 
 // GetOrder mocks base method.
-func (m *Mockservice) GetOrder(ctx context.Context, orderID int64) (app.Order, error) {
+func (m *Mockservice) GetOrder(ctx context.Context, orderID string) (app.Order, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetOrder", ctx, orderID)
 	ret0, _ := ret[0].(app.Order)

@@ -13,7 +13,7 @@ import (
 )
 
 type order struct {
-	ID      int64           `db:"id"`
+	ID      string           `db:"id"`
 	Status  string          `db:"status"`
 	Accrual sql.NullFloat64 `db:"accrual"`
 }
@@ -51,14 +51,14 @@ func (repo *orderRepository) init() error {
 }
 
 // Add добавление нового заказа
-func (repo *orderRepository) Add(ctx context.Context, orderID int64) error {
+func (repo *orderRepository) Add(ctx context.Context, orderID string) error {
 	_, err := repo.pool.Exec(ctx, sqlAddNewOrder, orderID)
 
 	return err
 }
 
 // FindByID поиск заказа по номеру
-func (repo *orderRepository) FindByID(ctx context.Context, orderID int64) (app.Order, error) {
+func (repo *orderRepository) FindByID(ctx context.Context, orderID string) (app.Order, error) {
 	var order order
 	row := repo.pool.QueryRow(ctx, sqlFindByID, orderID)
 	err := row.Scan(&order.ID, &order.Status, &order.Accrual)
@@ -72,7 +72,7 @@ func (repo *orderRepository) FindByID(ctx context.Context, orderID int64) (app.O
 }
 
 // UpdateStatus изменение статуса заказа
-func (repo *orderRepository) UpdateStatus(ctx context.Context, orderID int64, status string) error {
+func (repo *orderRepository) UpdateStatus(ctx context.Context, orderID string, status string) error {
 	_, err := repo.pool.Exec(ctx, sqlUpdateStatus, orderID, status)
 
 	return err
@@ -86,22 +86,22 @@ func (repo *orderRepository) Update(ctx context.Context, order app.Order) error 
 }
 
 // Delete удаление заказа
-func (repo *orderRepository) Delete(ctx context.Context, orderID int64) error {
+func (repo *orderRepository) Delete(ctx context.Context, orderID string) error {
 	_, err := repo.pool.Exec(ctx, sqlDelete, orderID)
 	return err
 }
 
 // FindRegistered поиск новых заказов для расчета
-func (repo *orderRepository) FindRegistered(ctx context.Context) ([]int64, error) {
+func (repo *orderRepository) FindRegistered(ctx context.Context) ([]string, error) {
 	rows, err := repo.pool.Query(ctx, sqlFindRegistered)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	res := make([]int64, 0)
+	res := make([]string, 0)
 	for rows.Next() {
-		var orderID int64
+		var orderID string
 		err := rows.Scan(&orderID)
 		if err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {

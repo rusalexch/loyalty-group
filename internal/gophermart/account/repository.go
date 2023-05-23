@@ -13,7 +13,7 @@ import (
 type transaction struct {
 	ID          int       `json:"-" db:"id"`
 	Type        string    `json:"-" db:"transaction_type"`
-	OrderID     int64     `json:"order" db:"order_id"`
+	OrderID     string     `json:"order" db:"order_id"`
 	Amount      float64   `json:"sum" db:"amount"`
 	ProcessedAt time.Time `json:"processed_at" db:"processed_at"`
 }
@@ -29,13 +29,13 @@ func (am *accountModule) createTable() {
 	}
 }
 
-func (am *accountModule) addDebit(ctx context.Context, orderID int64, amount float64) error {
+func (am *accountModule) addDebit(ctx context.Context, orderID string, amount float64) error {
 	_, err := am.pool.Exec(ctx, sqlAddDebit, orderID, amount)
 
 	return err
 }
 
-func (am *accountModule) addCredit(ctx context.Context, orderID int64, amount float64) error {
+func (am *accountModule) addCredit(ctx context.Context, orderID string, amount float64) error {
 	_, err := am.pool.Exec(ctx, sqlAddCredit, orderID, amount)
 
 	return err

@@ -15,7 +15,7 @@ import (
 
 func Test_handlers_getOrder(t *testing.T) {
 	type args struct {
-		orderID     int64
+		orderID     string
 		order       app.Order
 		getOrderErr error
 	}
@@ -31,9 +31,9 @@ func Test_handlers_getOrder(t *testing.T) {
 		{
 			name: "get order: Registered",
 			args: args{
-				orderID: 4561261212345467,
+				orderID: "4561261212345467",
 				order: app.Order{
-					ID:      4561261212345467,
+					ID:      "4561261212345467",
 					Status:  app.Registered,
 					Accrual: nil,
 				},
@@ -47,9 +47,9 @@ func Test_handlers_getOrder(t *testing.T) {
 		{
 			name: "get order: processed",
 			args: args{
-				orderID: 4561261212345467,
+				orderID: "4561261212345467",
 				order: app.Order{
-					ID:      4561261212345467,
+					ID:      "4561261212345467",
 					Status:  app.Processed,
 					Accrual: utils.Float64ToPointer(500),
 				},
@@ -63,7 +63,7 @@ func Test_handlers_getOrder(t *testing.T) {
 		{
 			name: "get order: processed",
 			args: args{
-				orderID:     13,
+				orderID:     "13",
 				order:       app.Order{},
 				getOrderErr: nil,
 			},
