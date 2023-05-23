@@ -68,12 +68,10 @@ func (um *userModule) FundByLogin(ctx context.Context, login string) (app.User, 
 }
 
 func (um *userModule) Create(ctx context.Context, user app.CreateUser) (app.User, error) {
-	var newUser app.User
-	row := um.pool.QueryRow(ctx, sqlAdd, user.Login, user.Password)
-	err := row.Scan(newUser.ID, newUser.Login, newUser.Password)
+	_, err := um.pool.Exec(ctx, sqlAdd, user.Login, user.Password)
 	if err != nil {
 		return app.User{}, err
 	}
 
-	return newUser, nil
+	return um.FundByLogin(ctx, user.Login)
 }

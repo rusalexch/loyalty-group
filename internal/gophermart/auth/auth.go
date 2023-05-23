@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"errors"
+	"log"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/golang-jwt/jwt/v5"
@@ -13,7 +14,7 @@ import (
 type Config struct {
 	Mux         *chi.Mux
 	UserService userService
-	jwtSecret   string
+	JwtSecret   string
 }
 
 type authModule struct {
@@ -26,7 +27,7 @@ func New(conf Config) *authModule {
 	module := &authModule{
 		mux:         conf.Mux,
 		userService: conf.UserService,
-		jwtSecret:   conf.jwtSecret,
+		jwtSecret:   conf.JwtSecret,
 	}
 	module.init()
 
@@ -39,7 +40,7 @@ func (am *authModule) CheckToken(ctx context.Context, authToken string) (app.Use
 			return nil, errors.New("unexpected signing method")
 		}
 
-		return am.jwtSecret, nil
+		return []byte(am.jwtSecret), nil
 	})
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		if userID, ok := claims["user"]; ok {
@@ -76,15 +77,16 @@ func validate(password, hash string) (bool, error) {
 }
 
 func (am *authModule) token(userID int) (string, error) {
-	t := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user": userID,
 	})
-	return t.SignedString(am.jwtSecret)
+	return t.SignedString([]byte(am.jwtSecret))
 }
 
 func (am *authModule) signup(ctx context.Context, signup signup) (string, error) {
 	user, err := am.userService.FundByLogin(ctx, signup.Login)
 	if err != nil && !errors.Is(err, app.ErrNotFound) {
+		log.Println("auth > signup > can't find user")
 		return "", err
 	}
 	if user.Login == signup.Login {
@@ -93,6 +95,7 @@ func (am *authModule) signup(ctx context.Context, signup signup) (string, error)
 
 	hash, err := hash(signup.Password)
 	if err != nil {
+		log.Println("auth > signup > can't generate hash")
 		return "", err
 	}
 	user, err = am.userService.Create(ctx, app.CreateUser{
@@ -100,6 +103,7 @@ func (am *authModule) signup(ctx context.Context, signup signup) (string, error)
 		Password: hash,
 	})
 	if err != nil {
+		log.Println("auth > signup > can't create user")
 		return "", err
 	}
 

@@ -18,5 +18,5 @@ const sqlFindByID = "SELECT * FROM users WHERE id = $1;"
 const sqlFindByLogin = "SELECT * FROM users WHERE login = $1;"
 
 const sqlAdd = `
-INSERT INTO users VALUES(DEFAULT, $1, $2) RETURNING *;
+INSERT INTO users VALUES(DEFAULT, $1, $2);
 `

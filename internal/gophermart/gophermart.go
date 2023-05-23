@@ -52,6 +52,7 @@ func New(conf Config) *gophermart {
 	a := auth.New(auth.Config{
 		Mux:         mux,
 		UserService: u,
+		JwtSecret:   "super_secret",
 	})
 	o := order.New(order.Config{
 		Mux:            mux,
