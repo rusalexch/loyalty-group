@@ -1,6 +1,6 @@
 package auth
 
-import "github.com/go-chi/chi"
+import "github.com/go-chi/chi/v5"
 
 type Config struct {
 	Mux         *chi.Mux
