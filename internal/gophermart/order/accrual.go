@@ -26,6 +26,8 @@ func (om *orderModule) getAccrual() {
 	orders, err := om.findRegistered(ctx)
 	if err != nil && !errors.Is(err, app.ErrNotFound) {
 		log.Println("order > getAccrual > can't get registered orders")
+		log.Println(err)
+		return
 	}
 
 	for _, ord := range orders {

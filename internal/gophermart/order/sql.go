@@ -5,7 +5,7 @@ const sqlCreateTable = `
 CREATE TABLE IF NOT EXISTS user_orders (
 	id bigint PRIMARY KEY,
 	user_id integer,
-	status order_status DEFAULT 'NEW',
+	status varchar DEFAULT 'NEW',
 	accrual double precision DEFAULT null,
 	uploaded_at timestamp,
 	CONSTRAINT user_order_key FOREIGN KEY (user_id) REFERENCES users (id)
