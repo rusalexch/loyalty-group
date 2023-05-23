@@ -70,6 +70,9 @@ func (am *accountModule) userCredit(ctx context.Context, userID int) ([]transact
 		var tr transaction
 		err = rows.Scan(&tr.ID, &tr.Type, &tr.OrderID, &tr.Amount, &tr.ProcessedAt)
 		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				return []transaction{}, app.ErrNotFound
+			}
 			return []transaction{}, err
 		}
 
