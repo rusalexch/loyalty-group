@@ -59,8 +59,8 @@ func (am *accountModule) currentBalance(ctx context.Context, userID int) (balanc
 	}, nil
 }
 
-func (am *accountModule) userCredit(ctx context.Context, userId int) ([]transaction, error) {
-	rows, err := am.pool.Query(ctx, sqlGetUserCredit, userId)
+func (am *accountModule) userCredit(ctx context.Context, userID int) ([]transaction, error) {
+	rows, err := am.pool.Query(ctx, sqlGetUserCredit, userID)
 	if err != nil {
 		return []transaction{}, err
 	}

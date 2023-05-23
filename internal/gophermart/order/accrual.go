@@ -29,7 +29,7 @@ func (om *orderModule) getAccrual() {
 	}
 
 	for _, ord := range orders {
-		res, err := http.Get(om.requestUrl(ord.ID))
+		res, err := http.Get(om.requestURL(ord.ID))
 		if err != nil {
 			log.Println("order > getAccrual > can't request order")
 			log.Println(err)
@@ -75,6 +75,6 @@ func (om *orderModule) getAccrual() {
 	}
 }
 
-func (om *orderModule) requestUrl(orderId int64) string {
-	return fmt.Sprintf("%s/%d", om.accrualAddress, orderId)
+func (om *orderModule) requestURL(orderID int64) string {
+	return fmt.Sprintf("%s/%d", om.accrualAddress, orderID)
 }

@@ -39,7 +39,7 @@ func (um *userModule) init() {
 	}
 }
 
-func (um *userModule) FindById(ctx context.Context, userID int) (app.User, error) {
+func (um *userModule) FindByID(ctx context.Context, userID int) (app.User, error) {
 	var user app.User
 	row := um.pool.QueryRow(ctx, sqlFindByID, userID)
 	err := row.Scan(&user.ID, &user.Login, &user.Password)

@@ -42,8 +42,8 @@ func (am *authModule) CheckToken(ctx context.Context, authToken string) (app.Use
 		return am.jwtSecret, nil
 	})
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		if userId, ok := claims["user"]; ok {
-			user, err := am.userService.FindById(ctx, userId.(int))
+		if userID, ok := claims["user"]; ok {
+			user, err := am.userService.FindByID(ctx, userID.(int))
 			if err != nil {
 				return app.User{}, err
 			}

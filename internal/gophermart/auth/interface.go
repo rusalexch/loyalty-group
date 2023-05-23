@@ -7,7 +7,7 @@ import (
 )
 
 type userService interface {
-	FindById(ctx context.Context, userID int) (app.User, error)
+	FindByID(ctx context.Context, userID int) (app.User, error)
 	FundByLogin(ctx context.Context, login string) (app.User, error)
 	Create(ctx context.Context, user app.CreateUser) (app.User, error)
 }
