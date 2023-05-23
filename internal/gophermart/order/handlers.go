@@ -91,7 +91,7 @@ func (om *orderModule) create(w http.ResponseWriter, r *http.Request) {
 	orderID := string(body)
 
 	if !validator.IsValid(orderID) {
-		log.Printf("order > create > invalid order ID: %d\n", orderID)
+		log.Printf("order > create > invalid order ID: %s\n", orderID)
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}

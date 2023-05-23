@@ -27,7 +27,7 @@ func (h *handlers) getOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !validator.IsValid(ID) {
-		log.Printf("handler > getOrder > order ID isn't valid: %d", ID)
+		log.Printf("handler > getOrder > order ID isn't valid: %s", ID)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

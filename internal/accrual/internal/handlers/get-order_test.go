@@ -85,7 +85,7 @@ func Test_handlers_getOrder(t *testing.T) {
 			ts := httptest.NewServer(h)
 			defer ts.Close()
 
-			statusCode, body := testRequest(t, ts, http.MethodGet, fmt.Sprintf("/api/orders/%d", tt.args.orderID), nil)
+			statusCode, body := testRequest(t, ts, http.MethodGet, fmt.Sprintf("/api/orders/%s", tt.args.orderID), nil)
 			assert.Equal(t, tt.want.code, statusCode)
 			assert.Equal(t, tt.want.order, body)
 		})

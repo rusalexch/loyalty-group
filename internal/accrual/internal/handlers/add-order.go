@@ -37,7 +37,7 @@ func (h *handlers) addOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !order.IsValid() {
-		log.Printf("handler > getOrder > order ID isn't valid: %d", order.ID)
+		log.Printf("handler > getOrder > order ID isn't valid: %s", order.ID)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
