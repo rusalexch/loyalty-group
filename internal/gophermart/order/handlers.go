@@ -11,6 +11,11 @@ import (
 	"github.com/rusalexch/loyalty-group/internal/validator"
 )
 
+func (om *orderModule) initHandler() {
+	om.mux.Get("/api/user/orders", om.get)
+	om.mux.Post("/api/user/orders", om.create)
+}
+
 func (om *orderModule) get(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
