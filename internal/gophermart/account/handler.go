@@ -112,7 +112,13 @@ func (am *accountModule) withdraw(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	am.addCredit(ctx, withdraw.OrderID, withdraw.Amount)
+	err = am.addCredit(ctx, withdraw.OrderID, withdraw.Amount)
+	if err != nil {
+		log.Println("account > withdraw > can't add credit")
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 }
 
