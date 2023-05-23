@@ -100,7 +100,7 @@ func (am *accountModule) withdraw(w http.ResponseWriter, r *http.Request) {
 	}
 
 	balance, err := am.currentBalance(ctx, user.ID)
-	if err != nil {
+	if err != nil && !errors.Is(err, app.ErrNotFound) {
 		log.Println("account > balance > can't get current balance")
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)

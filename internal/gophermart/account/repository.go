@@ -13,7 +13,7 @@ import (
 type transaction struct {
 	ID          int       `json:"-" db:"id"`
 	Type        string    `json:"-" db:"transaction_type"`
-	OrderID     string     `json:"order" db:"order_id"`
+	OrderID     string    `json:"order" db:"order_id"`
 	Amount      float64   `json:"sum" db:"amount"`
 	ProcessedAt time.Time `json:"processed_at" db:"processed_at"`
 }
@@ -45,7 +45,7 @@ func (am *accountModule) currentBalance(ctx context.Context, userID int) (balanc
 	var debit, credit float64
 
 	row := am.pool.QueryRow(ctx, sqlGetUserCurrentBalance, userID)
-	err := row.Scan(debit, credit)
+	err := row.Scan(&debit, &credit)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return balance{}, app.ErrNotFound
