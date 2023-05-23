@@ -69,9 +69,10 @@ func New(conf Config) *orderModule {
 	module.init()
 
 	acc := account.New(account.Config{
-		Mux:  conf.Mux,
-		Pool: conf.Pool,
-		Auth: conf.Auth,
+		Mux:   conf.Mux,
+		Pool:  conf.Pool,
+		Auth:  conf.Auth,
+		Order: module,
 	})
 	module.account = acc
 
@@ -92,6 +93,10 @@ func (om *orderModule) init() {
 	om.mux.Post("/api/user/orders", om.create)
 
 	go om.process()
+}
+
+func (om *orderModule) Create(ctx context.Context, userID int, orderID string) error {
+	return om.add(ctx, userID, orderID)
 }
 
 func (om *orderModule) findByID(ctx context.Context, orderID string) (order, error) {
