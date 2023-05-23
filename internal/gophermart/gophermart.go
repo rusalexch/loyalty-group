@@ -54,13 +54,12 @@ func New(conf Config) *gophermart {
 		UserService: u,
 		JwtSecret:   "super_secret",
 	})
-	o := order.New(order.Config{
+	order.New(order.Config{
 		Mux:            mux,
 		Pool:           pool,
 		Auth:           a,
 		AccrualAddress: conf.AccrualAddress,
 	})
-	defer o.Close()
 
 	s := server.New(conf.Address, mux)
 

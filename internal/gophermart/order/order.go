@@ -63,7 +63,7 @@ func New(conf Config) *orderModule {
 		mux:            conf.Mux,
 		pool:           conf.Pool,
 		auth:           conf.Auth,
-		tick:           time.NewTicker(10 * time.Second),
+		tick:           time.NewTicker(2 * time.Second),
 		accrualAddress: conf.AccrualAddress,
 	}
 	module.init()
@@ -78,10 +78,6 @@ func New(conf Config) *orderModule {
 	return module
 }
 
-func (om *orderModule) Close() {
-	om.tick.Stop()
-}
-
 func (om *orderModule) init() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -94,6 +90,7 @@ func (om *orderModule) init() {
 
 	om.mux.Get("/api/user/orders", om.get)
 	om.mux.Post("/api/user/orders", om.create)
+
 	go om.process()
 }
 

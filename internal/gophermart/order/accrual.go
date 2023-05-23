@@ -76,5 +76,5 @@ func (om *orderModule) getAccrual() {
 }
 
 func (om *orderModule) requestURL(orderID string) string {
-	return fmt.Sprintf("%s/%s", om.accrualAddress, orderID)
+	return fmt.Sprintf("http://%s/api/order/%s", om.accrualAddress, orderID)
 }
