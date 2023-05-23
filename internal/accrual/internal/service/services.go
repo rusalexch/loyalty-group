@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"math"
 	"time"
 
 	"github.com/rusalexch/loyalty-group/internal/accrual/internal/app"
@@ -179,6 +180,7 @@ func (s *service) calculate(orderID string) {
 			accrual += calcAccrual(product.Price, reward)
 		}
 	}
+	accrual = math.Round((accrual * 100) / 100)
 
 	s.orderRepo.Update(ctx, app.Order{
 		ID:      orderID,
