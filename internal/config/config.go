@@ -24,7 +24,7 @@ var (
 func init() {
 	address = flag.String("a", defaultAddr, "set address")
 	dbURL = flag.String("d", defaultDBURL, "set address")
-	address = flag.String("r", defaultAccrualAddress, "set address")
+	accrualAddress = flag.String("r", defaultAccrualAddress, "set address")
 }
 
 func NewAccrualConfig() accrual.Config {

@@ -7,9 +7,10 @@ import (
 	"log"
 	"time"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/rusalexch/loyalty-group/internal/gophermart/account"
 	"github.com/rusalexch/loyalty-group/internal/gophermart/app"
 )
 
@@ -37,17 +38,22 @@ type auth interface {
 	CheckToken(ctx context.Context, authToken string) (app.User, error)
 }
 
+type balancer interface {
+	Add(ctx context.Context, orderID int64, amount float64) error
+}
+
 type Config struct {
 	Mux            *chi.Mux
 	Pool           *pgxpool.Pool
-	auth           auth
-	accrualAddress string
+	Auth           auth
+	AccrualAddress string
 }
 
 type orderModule struct {
 	mux            *chi.Mux
 	pool           *pgxpool.Pool
 	auth           auth
+	account        balancer
 	tick           *time.Ticker
 	accrualAddress string
 }
@@ -56,11 +62,18 @@ func New(conf Config) *orderModule {
 	module := &orderModule{
 		mux:            conf.Mux,
 		pool:           conf.Pool,
-		auth:           conf.auth,
+		auth:           conf.Auth,
 		tick:           time.NewTicker(10 * time.Second),
-		accrualAddress: conf.accrualAddress,
+		accrualAddress: conf.AccrualAddress,
 	}
 	module.init()
+
+	acc := account.New(account.Config{
+		Mux:  conf.Mux,
+		Pool: conf.Pool,
+		Auth: conf.Auth,
+	})
+	module.account = acc
 
 	return module
 }

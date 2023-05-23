@@ -2,7 +2,7 @@ package order
 
 // sqlCreateTable запрос на создание таблицы
 const sqlCreateTable = `
-CREATE TABLE IF NOT EXIST user_orders (
+CREATE TABLE IF NOT EXISTS user_orders (
 	id bigint PRIMARY KEY,
 	user_id integer,
 	status order_status DEFAULT 'REGISTERED',

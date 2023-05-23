@@ -1,13 +1,15 @@
 package account
 
-import "time"
+import (
+	"context"
 
-type transaction struct {
-	ID          int       `json:"-" db:"id"`
-	Type        string    `json:"-" db:"transaction_type"`
-	OrderID     int64     `json:"order" db:"order_id"`
-	Amount      float64   `json:"sum" db:"amount"`
-	ProcessedAt time.Time `json:"processed_at" db:"processed_at"`
+	"github.com/go-chi/chi/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/rusalexch/loyalty-group/internal/gophermart/app"
+)
+
+type auth interface {
+	CheckToken(ctx context.Context, authToken string) (app.User, error)
 }
 
 type balance struct {
@@ -18,4 +20,36 @@ type balance struct {
 type withdrawRequest struct {
 	OrderID int64   `json:"order"`
 	Amount  float64 `json:"sum"`
+}
+
+type Config struct {
+	Mux  *chi.Mux
+	Pool *pgxpool.Pool
+	Auth auth
+}
+
+type accountModule struct {
+	mux  *chi.Mux
+	pool *pgxpool.Pool
+	auth auth
+}
+
+func New(conf Config) *accountModule {
+	module := &accountModule{
+		mux:  conf.Mux,
+		pool: conf.Pool,
+		auth: conf.Auth,
+	}
+	module.init()
+
+	return module
+}
+
+func (am *accountModule) init() {
+	am.createTable()
+	am.initHandler()
+}
+
+func (am *accountModule) Add(ctx context.Context, orderID int64, amount float64) error {
+	return am.addDebit(ctx, orderID, amount)
 }

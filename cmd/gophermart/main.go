@@ -8,5 +8,6 @@ import (
 func main() {
 	conf := config.NewGophermartConfig()
 
-	gophermart.New(conf)
+	g := gophermart.New(conf)
+	g.Start()
 }

@@ -67,8 +67,11 @@ func (om *orderModule) getAccrual() {
 				log.Println(err)
 				continue
 			}
+			if accrual.Status == "PROCESSED" && *accrual.Accrual > 0 {
+				om.account.Add(ctx, accrual.ID, *accrual.Accrual)
+			}
 		}
-		// TODO: Здесь добавить транзакцию баланса
+
 	}
 }
 
