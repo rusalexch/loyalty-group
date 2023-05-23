@@ -40,7 +40,7 @@ COALESCE((SELECT sum(amount) FROM tr WHERE type = 'CREDIT'), 0) as credit;
 `
 
 const sqlGetUserCredit = `
-SELECT * FROM transactions t
+SELECT t.* FROM transactions t
 JOIN user_orders o ON o.id = t.order_id
 WHERE o.user_id = $1 AND t."type" = 'CREDIT';
 `
