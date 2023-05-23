@@ -6,6 +6,8 @@ import (
 	"io"
 	"log"
 	"net/http"
+
+	"github.com/rusalexch/loyalty-group/internal/gophermart/app"
 )
 
 func (am *authModule) register(w http.ResponseWriter, r *http.Request) {
@@ -20,8 +22,8 @@ func (am *authModule) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	content := r.Header.Get(contentType)
-	if content != appJSON {
+	content := r.Header.Get(app.ContentType)
+	if content != app.AppJSON {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -53,6 +55,6 @@ func (am *authModule) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Add(authHeader, token)
+	w.Header().Add(app.AuthHeader, token)
 	w.WriteHeader(http.StatusOK)
 }

@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS products (
 	order_id bigint NOT NULL,
 	description varchar NOT NULL,
 	price double precision NOT NULL,
-	CONSTRAINT product_order_key FOREIGN KEY (order_id) REFERENCES orders (id)
+	 produCONSTRAINTct_order_key FOREIGN KEY (order_id) REFERENCES orders (id)
 );
 `
 
