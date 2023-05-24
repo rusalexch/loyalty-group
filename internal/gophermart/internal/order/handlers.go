@@ -11,27 +11,16 @@ import (
 	"github.com/rusalexch/loyalty-group/internal/validator"
 )
 
-func (om *orderModule) initHandler() {
-	om.mux.Get("/api/user/orders", om.get)
-	om.mux.Post("/api/user/orders", om.create)
-}
-
 func (om *orderModule) get(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	token := r.Header.Get(app.AuthHeader)
-	if token == "" {
-		log.Println("order > get > empty auth header")
+	isAuth := ctx.Value(app.UserKey)
+	if isAuth == nil {
+		log.Println("order > get > unauthorized")
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	user, err := om.auth.CheckToken(ctx, token)
-	if err != nil {
-		log.Println("order > get > can't check token")
-		log.Println(err)
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
+	user := isAuth.(app.User)
 
 	orders, err := om.findByUserID(ctx, user.ID)
 	if err != nil {
@@ -64,20 +53,13 @@ func (om *orderModule) get(w http.ResponseWriter, r *http.Request) {
 func (om *orderModule) create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	token := r.Header.Get(app.AuthHeader)
-	if token == "" {
-		log.Println("order > create > empty auth header")
+	isAuth := ctx.Value(app.UserKey)
+	if isAuth == nil {
+		log.Println("order > get > unauthorized")
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-
-	user, err := om.auth.CheckToken(ctx, token)
-	if err != nil {
-		log.Println("order > create > can't check token")
-		log.Println(err)
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
+	user := isAuth.(app.User)
 
 	if r.Header.Get(app.ContentType) != app.Text {
 		log.Println("order > create > unsupported content type")

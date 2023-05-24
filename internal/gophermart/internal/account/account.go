@@ -2,8 +2,8 @@ package account
 
 import (
 	"context"
+	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rusalexch/loyalty-group/internal/gophermart/internal/app"
 )
@@ -27,14 +27,12 @@ type withdrawRequest struct {
 }
 
 type Config struct {
-	Mux   *chi.Mux
 	Pool  *pgxpool.Pool
 	Auth  auth
 	Order order
 }
 
 type accountModule struct {
-	mux   *chi.Mux
 	pool  *pgxpool.Pool
 	auth  auth
 	order order
@@ -42,19 +40,37 @@ type accountModule struct {
 
 func New(conf Config) *accountModule {
 	module := &accountModule{
-		mux:   conf.Mux,
 		pool:  conf.Pool,
 		auth:  conf.Auth,
 		order: conf.Order,
 	}
-	module.init()
+	module.createTable()
 
 	return module
 }
 
-func (am *accountModule) init() {
-	am.createTable()
-	am.initHandler()
+func (am *accountModule) Middlewares() []app.Middleware {
+	return []app.Middleware{}
+}
+
+func (am *accountModule) Handlers() []app.Handler {
+	return []app.Handler{
+		{
+			Method:  http.MethodGet,
+			Pattern: "/api/user/balance",
+			Handler: am.balance,
+		},
+		{
+			Method:  http.MethodPost,
+			Pattern: "/api/user/balance/withdraw",
+			Handler: am.withdraw,
+		},
+		{
+			Method:  http.MethodGet,
+			Pattern: "/api/user/withdrawals",
+			Handler: am.withdrawals,
+		},
+	}
 }
 
 func (am *accountModule) Add(ctx context.Context, orderID string, amount float64) error {

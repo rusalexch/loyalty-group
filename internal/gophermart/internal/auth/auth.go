@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"net/http"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/rusalexch/loyalty-group/internal/gophermart/internal/app"
@@ -12,17 +13,32 @@ import (
 
 func New(conf Config) *authModule {
 	module := &authModule{
-		mux:         conf.Mux,
 		userService: conf.UserService,
 		jwtSecret:   conf.JwtSecret,
 	}
-	module.init()
 
 	return module
 }
 
-func (am *authModule) init() {
-	am.initHandler()
+func (am *authModule) Middlewares() []app.Middleware {
+	return []app.Middleware{
+		am.AuthMiddleware(),
+	}
+}
+
+func (am *authModule) Handlers() []app.Handler {
+	register := app.Handler{
+		Method:  http.MethodPost,
+		Pattern: "/api/user/register",
+		Handler: am.register,
+	}
+	login := app.Handler{
+		Method:  http.MethodPost,
+		Pattern: "/api/user/login",
+		Handler: am.login,
+	}
+
+	return []app.Handler{register, login}
 }
 
 func (am *authModule) CheckToken(ctx context.Context, authToken string) (app.User, error) {

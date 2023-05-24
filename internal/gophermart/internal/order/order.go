@@ -3,9 +3,9 @@ package order
 import (
 	"context"
 	"database/sql"
+	"net/http"
 	"time"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rusalexch/loyalty-group/internal/gophermart/internal/account"
 	"github.com/rusalexch/loyalty-group/internal/gophermart/internal/app"
@@ -37,17 +37,17 @@ type auth interface {
 
 type balancer interface {
 	Add(ctx context.Context, orderID string, amount float64) error
+	Middlewares() []app.Middleware
+	Handlers() []app.Handler
 }
 
 type Config struct {
-	Mux            *chi.Mux
 	Pool           *pgxpool.Pool
 	Auth           auth
 	AccrualAddress string
 }
 
 type orderModule struct {
-	mux            *chi.Mux
 	pool           *pgxpool.Pool
 	auth           auth
 	account        balancer
@@ -57,33 +57,48 @@ type orderModule struct {
 
 func New(conf Config) *orderModule {
 	module := &orderModule{
-		mux:            conf.Mux,
 		pool:           conf.Pool,
 		auth:           conf.Auth,
 		tick:           time.NewTicker(2 * time.Second),
 		accrualAddress: conf.AccrualAddress,
 	}
-	module.init()
+	module.initRepository()
 
 	acc := account.New(account.Config{
-		Mux:   conf.Mux,
 		Pool:  conf.Pool,
 		Auth:  conf.Auth,
 		Order: module,
 	})
 	module.account = acc
 
+	go module.process()
+
 	return module
 }
 
-func (om *orderModule) init() {
-	om.initRepository()
-	om.initHandler()
-	go om.process()
+func (om *orderModule) Middlewares() []app.Middleware {
+	mid := om.account.Middlewares()
+
+	return append([]app.Middleware{}, mid...)
+}
+
+func (om *orderModule) Handlers() []app.Handler {
+	accHand := om.account.Handlers()
+	hand := []app.Handler{
+		{
+			Method: http.MethodGet,
+			Pattern: "/api/user/orders",
+			Handler: om.get,
+		},
+		{
+			Method: http.MethodPost,
+			Pattern: "/api/user/orders",
+			Handler: om.create,
+		},
+	}
+	return append(hand, accHand...)
 }
 
 func (om *orderModule) Create(ctx context.Context, userID int, orderID string) error {
 	return om.add(ctx, userID, orderID)
 }
-
-

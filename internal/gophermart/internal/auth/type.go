@@ -1,15 +1,11 @@
 package auth
 
-import "github.com/go-chi/chi/v5"
-
 type Config struct {
-	Mux         *chi.Mux
 	UserService userService
 	JwtSecret   string
 }
 
 type authModule struct {
-	mux         *chi.Mux
 	userService userService
 	jwtSecret   string
 }

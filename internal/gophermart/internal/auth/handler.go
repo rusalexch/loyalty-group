@@ -10,11 +10,6 @@ import (
 	"github.com/rusalexch/loyalty-group/internal/gophermart/internal/app"
 )
 
-func (am *authModule) initHandler() {
-	am.mux.Post("/api/user/register", am.register)
-	am.mux.Post("/api/user/login", am.login)
-}
-
 func (am *authModule) login(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

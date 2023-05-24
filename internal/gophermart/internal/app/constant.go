@@ -6,3 +6,9 @@ const (
 	Text        = "text/plain"
 	AuthHeader  = "Authorization"
 )
+
+type ContextKey int
+
+const (
+	UserKey ContextKey = iota
+)

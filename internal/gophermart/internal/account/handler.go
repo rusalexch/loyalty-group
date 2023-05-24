@@ -11,28 +11,16 @@ import (
 	"github.com/rusalexch/loyalty-group/internal/validator"
 )
 
-func (am *accountModule) initHandler() {
-	am.mux.Get("/api/user/balance", am.balance)
-	am.mux.Post("/api/user/balance/withdraw", am.withdraw)
-	am.mux.Get("/api/user/withdrawals", am.withdrawals)
-}
-
 func (am *accountModule) balance(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	token := r.Header.Get(app.AuthHeader)
-	if token == "" {
-		log.Println("account > balance > token is empty")
+	isAuth := ctx.Value(app.UserKey)
+	if isAuth == nil {
+		log.Println("order > get > unauthorized")
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	user, err := am.auth.CheckToken(ctx, token)
-	if err != nil {
-		log.Println("account > balance > can't check token")
-		log.Println(err)
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
+	user := isAuth.(app.User)
 
 	balance, err := am.currentBalance(ctx, user.ID)
 	if err != nil {
@@ -57,19 +45,13 @@ func (am *accountModule) balance(w http.ResponseWriter, r *http.Request) {
 func (am *accountModule) withdraw(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	token := r.Header.Get(app.AuthHeader)
-	if token == "" {
-		log.Println("account > balance > token is empty")
+	isAuth := ctx.Value(app.UserKey)
+	if isAuth == nil {
+		log.Println("order > get > unauthorized")
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	user, err := am.auth.CheckToken(ctx, token)
-	if err != nil {
-		log.Println("account > balance > can't check token")
-		log.Println(err)
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
+	user := isAuth.(app.User)
 
 	if r.Header.Get(app.ContentType) != app.AppJSON {
 		log.Println("account > balance > incorrect content type")
@@ -133,19 +115,13 @@ func (am *accountModule) withdraw(w http.ResponseWriter, r *http.Request) {
 func (am *accountModule) withdrawals(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	token := r.Header.Get(app.AuthHeader)
-	if token == "" {
-		log.Println("account > balance > token is empty")
+	isAuth := ctx.Value(app.UserKey)
+	if isAuth == nil {
+		log.Println("order > get > unauthorized")
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	user, err := am.auth.CheckToken(ctx, token)
-	if err != nil {
-		log.Println("account > balance > can't check token")
-		log.Println(err)
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
+	user := isAuth.(app.User)
 
 	tr, err := am.userCredit(ctx, user.ID)
 	if err != nil {
