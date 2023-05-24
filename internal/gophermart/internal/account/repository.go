@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/rusalexch/loyalty-group/internal/gophermart/app"
+	"github.com/rusalexch/loyalty-group/internal/gophermart/internal/app"
 )
 
 type transaction struct {

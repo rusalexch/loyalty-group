@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/rusalexch/loyalty-group/internal/gophermart/app"
+	"github.com/rusalexch/loyalty-group/internal/gophermart/internal/app"
 	"github.com/rusalexch/loyalty-group/internal/validator"
 )
 

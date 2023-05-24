@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/rusalexch/loyalty-group/internal/gophermart/app"
+	"github.com/rusalexch/loyalty-group/internal/gophermart/internal/app"
 	"golang.org/x/crypto/bcrypt"
 )
 

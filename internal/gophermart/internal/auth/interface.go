@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 
-	"github.com/rusalexch/loyalty-group/internal/gophermart/app"
+	"github.com/rusalexch/loyalty-group/internal/gophermart/internal/app"
 )
 
 type userService interface {

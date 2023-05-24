@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/rusalexch/loyalty-group/internal/gophermart/app"
+	"github.com/rusalexch/loyalty-group/internal/gophermart/internal/app"
 )
 
 func (om *orderModule) process() {

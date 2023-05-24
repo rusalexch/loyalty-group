@@ -9,10 +9,10 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/httplog"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/rusalexch/loyalty-group/internal/gophermart/auth"
-	"github.com/rusalexch/loyalty-group/internal/gophermart/order"
-	"github.com/rusalexch/loyalty-group/internal/gophermart/server"
-	"github.com/rusalexch/loyalty-group/internal/gophermart/user"
+	"github.com/rusalexch/loyalty-group/internal/gophermart/internal/auth"
+	"github.com/rusalexch/loyalty-group/internal/gophermart/internal/order"
+	"github.com/rusalexch/loyalty-group/internal/gophermart/internal/server"
+	"github.com/rusalexch/loyalty-group/internal/gophermart/internal/user"
 )
 
 type serv interface {
