@@ -65,9 +65,9 @@ func New(conf Config) *orderModule {
 	module.initRepository()
 
 	acc := account.New(account.Config{
-		Pool:  conf.Pool,
-		Auth:  conf.Auth,
-		Order: module,
+		Pool:        conf.Pool,
+		Auth:        conf.Auth,
+		CreateOrder: module.add,
 	})
 	module.account = acc
 
@@ -86,19 +86,15 @@ func (om *orderModule) Handlers() []app.Handler {
 	accHand := om.account.Handlers()
 	hand := []app.Handler{
 		{
-			Method: http.MethodGet,
+			Method:  http.MethodGet,
 			Pattern: "/api/user/orders",
 			Handler: om.get,
 		},
 		{
-			Method: http.MethodPost,
+			Method:  http.MethodPost,
 			Pattern: "/api/user/orders",
 			Handler: om.create,
 		},
 	}
 	return append(hand, accHand...)
-}
-
-func (om *orderModule) Create(ctx context.Context, userID int, orderID string) error {
-	return om.add(ctx, userID, orderID)
 }

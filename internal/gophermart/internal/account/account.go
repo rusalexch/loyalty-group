@@ -12,9 +12,7 @@ type auth interface {
 	CheckToken(ctx context.Context, authToken string) (app.User, error)
 }
 
-type order interface {
-	Create(ctx context.Context, userID int, orderID string) error
-}
+type createOrderFunc func(ctx context.Context, userID int, orderID string) error
 
 type balance struct {
 	Current  float64 `json:"current"`
@@ -27,22 +25,22 @@ type withdrawRequest struct {
 }
 
 type Config struct {
-	Pool  *pgxpool.Pool
-	Auth  auth
-	Order order
+	Pool        *pgxpool.Pool
+	Auth        auth
+	CreateOrder createOrderFunc
 }
 
 type accountModule struct {
-	pool  *pgxpool.Pool
-	auth  auth
-	order order
+	pool        *pgxpool.Pool
+	auth        auth
+	createOrder createOrderFunc
 }
 
 func New(conf Config) *accountModule {
 	module := &accountModule{
-		pool:  conf.Pool,
-		auth:  conf.Auth,
-		order: conf.Order,
+		pool:        conf.Pool,
+		auth:        conf.Auth,
+		createOrder: conf.CreateOrder,
 	}
 	module.createTable()
 
