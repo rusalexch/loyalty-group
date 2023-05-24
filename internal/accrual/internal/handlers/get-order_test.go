@@ -41,7 +41,7 @@ func Test_handlers_getOrder(t *testing.T) {
 			},
 			want: want{
 				code:  200,
-				order: `{"order":4561261212345467,"status":"REGISTERED"}`,
+				order: `{"order":"4561261212345467","status":"REGISTERED"}`,
 			},
 		},
 		{
@@ -57,7 +57,7 @@ func Test_handlers_getOrder(t *testing.T) {
 			},
 			want: want{
 				code:  200,
-				order: `{"order":4561261212345467,"status":"PROCESSED","accrual":500}`,
+				order: `{"order":"4561261212345467","status":"PROCESSED","accrual":500}`,
 			},
 		},
 		{
