@@ -7,7 +7,7 @@ import (
 	"github.com/rusalexch/loyalty-group/internal/gophermart/internal/app"
 )
 
-func (am *authModule) AuthMiddleware() func(http.Handler) http.Handler {
+func (am *authModule) createAuthMiddleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
@@ -16,7 +16,7 @@ func (am *authModule) AuthMiddleware() func(http.Handler) http.Handler {
 				next.ServeHTTP(w, r)
 				return
 			}
-			user, err := am.CheckToken(ctx, token)
+			user, err := am.checkToken(ctx, token)
 			if err != nil {
 				next.ServeHTTP(w, r)
 			}

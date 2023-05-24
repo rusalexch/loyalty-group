@@ -4,44 +4,13 @@ import (
 	"context"
 	"errors"
 	"log"
-	"net/http"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/rusalexch/loyalty-group/internal/gophermart/internal/app"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func New(conf Config) *authModule {
-	module := &authModule{
-		userService: conf.UserService,
-		jwtSecret:   conf.JwtSecret,
-	}
-
-	return module
-}
-
-func (am *authModule) Middlewares() []app.Middleware {
-	return []app.Middleware{
-		am.AuthMiddleware(),
-	}
-}
-
-func (am *authModule) Handlers() []app.Handler {
-	register := app.Handler{
-		Method:  http.MethodPost,
-		Pattern: "/api/user/register",
-		Handler: am.register,
-	}
-	login := app.Handler{
-		Method:  http.MethodPost,
-		Pattern: "/api/user/login",
-		Handler: am.login,
-	}
-
-	return []app.Handler{register, login}
-}
-
-func (am *authModule) CheckToken(ctx context.Context, authToken string) (app.User, error) {
+func (am *authModule) checkToken(ctx context.Context, authToken string) (app.User, error) {
 	token, err := jwt.Parse(authToken, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
@@ -86,7 +55,7 @@ func (am *authModule) token(userID int) (string, error) {
 }
 
 func (am *authModule) signup(ctx context.Context, signup signup) (string, error) {
-	user, err := am.userService.FundByLogin(ctx, signup.Login)
+	user, err := am.userService.FindByLogin(ctx, signup.Login)
 	if err != nil && !errors.Is(err, app.ErrNotFound) {
 		log.Println("auth > signup > can't find user")
 		return "", err
@@ -113,7 +82,7 @@ func (am *authModule) signup(ctx context.Context, signup signup) (string, error)
 }
 
 func (am *authModule) signin(ctx context.Context, login login) (string, error) {
-	user, err := am.userService.FundByLogin(ctx, login.Login)
+	user, err := am.userService.FindByLogin(ctx, login.Login)
 	if err != nil {
 		if errors.Is(err, app.ErrNotFound) {
 			return "", errUnauthorized
