@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/rusalexch/loyalty-group/internal/gophermart/internal/account"
 	"github.com/rusalexch/loyalty-group/internal/gophermart/internal/app"
+	"github.com/rusalexch/loyalty-group/internal/gophermart/internal/order/internal/account"
 )
 
 type accrual struct {
